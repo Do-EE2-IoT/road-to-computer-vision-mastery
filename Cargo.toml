@@ -1,0 +1,8 @@
+[workspace]
+members = ["days/day_1"]
+resolver = "3"
+
+[workspace.dependencies]
+image = "0.24"
+show-image = "0.14"
+
