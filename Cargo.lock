@@ -362,6 +362,402 @@ dependencies = [
 ]
 
 [[package]]
+name = "day_10"
+version = "0.1.0"
+
+[[package]]
+name = "day_100"
+version = "0.1.0"
+
+[[package]]
+name = "day_11"
+version = "0.1.0"
+
+[[package]]
+name = "day_12"
+version = "0.1.0"
+
+[[package]]
+name = "day_13"
+version = "0.1.0"
+
+[[package]]
+name = "day_14"
+version = "0.1.0"
+
+[[package]]
+name = "day_15"
+version = "0.1.0"
+
+[[package]]
+name = "day_16"
+version = "0.1.0"
+
+[[package]]
+name = "day_17"
+version = "0.1.0"
+
+[[package]]
+name = "day_18"
+version = "0.1.0"
+
+[[package]]
+name = "day_19"
+version = "0.1.0"
+
+[[package]]
+name = "day_2"
+version = "0.1.0"
+
+[[package]]
+name = "day_20"
+version = "0.1.0"
+
+[[package]]
+name = "day_21"
+version = "0.1.0"
+
+[[package]]
+name = "day_22"
+version = "0.1.0"
+
+[[package]]
+name = "day_23"
+version = "0.1.0"
+
+[[package]]
+name = "day_24"
+version = "0.1.0"
+
+[[package]]
+name = "day_25"
+version = "0.1.0"
+
+[[package]]
+name = "day_26"
+version = "0.1.0"
+
+[[package]]
+name = "day_27"
+version = "0.1.0"
+
+[[package]]
+name = "day_28"
+version = "0.1.0"
+
+[[package]]
+name = "day_29"
+version = "0.1.0"
+
+[[package]]
+name = "day_3"
+version = "0.1.0"
+
+[[package]]
+name = "day_30"
+version = "0.1.0"
+
+[[package]]
+name = "day_31"
+version = "0.1.0"
+
+[[package]]
+name = "day_32"
+version = "0.1.0"
+
+[[package]]
+name = "day_33"
+version = "0.1.0"
+
+[[package]]
+name = "day_34"
+version = "0.1.0"
+
+[[package]]
+name = "day_35"
+version = "0.1.0"
+
+[[package]]
+name = "day_36"
+version = "0.1.0"
+
+[[package]]
+name = "day_37"
+version = "0.1.0"
+
+[[package]]
+name = "day_38"
+version = "0.1.0"
+
+[[package]]
+name = "day_39"
+version = "0.1.0"
+
+[[package]]
+name = "day_4"
+version = "0.1.0"
+
+[[package]]
+name = "day_40"
+version = "0.1.0"
+
+[[package]]
+name = "day_41"
+version = "0.1.0"
+
+[[package]]
+name = "day_42"
+version = "0.1.0"
+
+[[package]]
+name = "day_43"
+version = "0.1.0"
+
+[[package]]
+name = "day_44"
+version = "0.1.0"
+
+[[package]]
+name = "day_45"
+version = "0.1.0"
+
+[[package]]
+name = "day_46"
+version = "0.1.0"
+
+[[package]]
+name = "day_47"
+version = "0.1.0"
+
+[[package]]
+name = "day_48"
+version = "0.1.0"
+
+[[package]]
+name = "day_49"
+version = "0.1.0"
+
+[[package]]
+name = "day_5"
+version = "0.1.0"
+
+[[package]]
+name = "day_50"
+version = "0.1.0"
+
+[[package]]
+name = "day_51"
+version = "0.1.0"
+
+[[package]]
+name = "day_52"
+version = "0.1.0"
+
+[[package]]
+name = "day_53"
+version = "0.1.0"
+
+[[package]]
+name = "day_54"
+version = "0.1.0"
+
+[[package]]
+name = "day_55"
+version = "0.1.0"
+
+[[package]]
+name = "day_56"
+version = "0.1.0"
+
+[[package]]
+name = "day_57"
+version = "0.1.0"
+
+[[package]]
+name = "day_58"
+version = "0.1.0"
+
+[[package]]
+name = "day_59"
+version = "0.1.0"
+
+[[package]]
+name = "day_6"
+version = "0.1.0"
+
+[[package]]
+name = "day_60"
+version = "0.1.0"
+
+[[package]]
+name = "day_61"
+version = "0.1.0"
+
+[[package]]
+name = "day_62"
+version = "0.1.0"
+
+[[package]]
+name = "day_63"
+version = "0.1.0"
+
+[[package]]
+name = "day_64"
+version = "0.1.0"
+
+[[package]]
+name = "day_65"
+version = "0.1.0"
+
+[[package]]
+name = "day_66"
+version = "0.1.0"
+
+[[package]]
+name = "day_67"
+version = "0.1.0"
+
+[[package]]
+name = "day_68"
+version = "0.1.0"
+
+[[package]]
+name = "day_69"
+version = "0.1.0"
+
+[[package]]
+name = "day_7"
+version = "0.1.0"
+
+[[package]]
+name = "day_70"
+version = "0.1.0"
+
+[[package]]
+name = "day_71"
+version = "0.1.0"
+
+[[package]]
+name = "day_72"
+version = "0.1.0"
+
+[[package]]
+name = "day_73"
+version = "0.1.0"
+
+[[package]]
+name = "day_74"
+version = "0.1.0"
+
+[[package]]
+name = "day_75"
+version = "0.1.0"
+
+[[package]]
+name = "day_76"
+version = "0.1.0"
+
+[[package]]
+name = "day_77"
+version = "0.1.0"
+
+[[package]]
+name = "day_78"
+version = "0.1.0"
+
+[[package]]
+name = "day_79"
+version = "0.1.0"
+
+[[package]]
+name = "day_8"
+version = "0.1.0"
+
+[[package]]
+name = "day_80"
+version = "0.1.0"
+
+[[package]]
+name = "day_81"
+version = "0.1.0"
+
+[[package]]
+name = "day_82"
+version = "0.1.0"
+
+[[package]]
+name = "day_83"
+version = "0.1.0"
+
+[[package]]
+name = "day_84"
+version = "0.1.0"
+
+[[package]]
+name = "day_85"
+version = "0.1.0"
+
+[[package]]
+name = "day_86"
+version = "0.1.0"
+
+[[package]]
+name = "day_87"
+version = "0.1.0"
+
+[[package]]
+name = "day_88"
+version = "0.1.0"
+
+[[package]]
+name = "day_89"
+version = "0.1.0"
+
+[[package]]
+name = "day_9"
+version = "0.1.0"
+
+[[package]]
+name = "day_90"
+version = "0.1.0"
+
+[[package]]
+name = "day_91"
+version = "0.1.0"
+
+[[package]]
+name = "day_92"
+version = "0.1.0"
+
+[[package]]
+name = "day_93"
+version = "0.1.0"
+
+[[package]]
+name = "day_94"
+version = "0.1.0"
+
+[[package]]
+name = "day_95"
+version = "0.1.0"
+
+[[package]]
+name = "day_96"
+version = "0.1.0"
+
+[[package]]
+name = "day_97"
+version = "0.1.0"
+
+[[package]]
+name = "day_98"
+version = "0.1.0"
+
+[[package]]
+name = "day_99"
+version = "0.1.0"
+
+[[package]]
 name = "dispatch"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

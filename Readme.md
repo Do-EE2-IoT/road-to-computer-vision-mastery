@@ -1,18 +1,6 @@
-# 100-Day Roadmap to Become a **Computer Vision Engineer** 
+# 100-Day Roadmap to Become a **Computer Vision Engineer**
 
 > Goal: finish a focused, job-ready computer vision track in **100 days**
-
----
-
-## Day 1 -  / Estimate / Key Notes
-
-| What to Learn | Estimate | Key Notes | Output |
-|---|---:|---|---|
-| RGB fundamentals: RGB24/BGR24/RGB565, raw byte layout | 2h | Focus on channel order, stride/padding, raw-to-image reconstruction | `examples/rgb.rs`, `docs/rgb.md` |
-| HSV fundamentals: channel meaning + RGB->HSV math | 2h | Hue wrap-around for red (`0°` and `360°`), normalize ranges correctly | `examples/hsv.rs`, `docs/hsv.md` |
-| Practical color segmentation with HSV threshold | 2h | Tune S/V to reduce noise, use mask + highlight for debugging | Red mask + highlight demo |
-| YUV system formats: YUV420, NV12, NV21, I420 | 2h | Do not confuse UV order; verify BT.601/BT.709 and full/limited range | `examples/yuv.rs`, `docs/yuv.md` |
-| Raw pipeline drill: RGB -> NV12 -> RGB and quality check | 1.5h | Track MAE after conversion to understand chroma-loss impact | Reconstruction stats + visual comparison |
 
 ---
 
@@ -35,11 +23,13 @@ Day 91-100  : Portfolio Finalization + Interview Readiness
 ## 2) What to De-Emphasize
 
 Since you already have basics:
+
 - No deep dive into advanced math proofs.
 - No deep dive into low-level Rust internals.
 - No broad exploration of unrelated ML areas.
 
 Your success in 100 days depends on:
+
 - Practical pipelines
 - Correct metrics
 - Model debugging ability
@@ -52,11 +42,13 @@ Your success in 100 days depends on:
 ## Phase 0 (Day 1-5) - Fast Refresh Only
 
 ### Focus
+
 - Quick Rust productivity refresh
 - Quick optimization/math intuition refresh
 - Environment setup for fast iteration
 
 ### Must Do
+
 - Setup one workspace with reusable structure:
   - `data/`, `src/bin/`, `models/`, `reports/`
 - Prepare Rust crates:
@@ -66,6 +58,7 @@ Your success in 100 days depends on:
   - Batch folder preprocessing script
 
 ### Important Notes
+
 - Do not spend more than 5 days here.
 - If blocked by tooling, fix once and template it for the rest of roadmap.
 
@@ -74,17 +67,20 @@ Your success in 100 days depends on:
 ## Phase 1 (Day 6-25) - Image Processing
 
 ### Focus Areas
+
 - Color spaces: RGB/BGR, HSV, LAB
 - Filtering: Gaussian, Median, Bilateral, Canny
 - Morphology: erosion, dilation, opening, closing
 - Feature extraction: contour, HOG, ORB
 
 ### What Matters Most
+
 - Choosing the right preprocessing chain for noisy real images
 - Understanding tradeoff between denoising and edge/detail loss
 - Building reusable preprocessing modules
 
 ### Deliverables
+
 - Repo: `cv-image-processing-rust-100d`
 - Minimum binaries:
   - `color_pipeline.rs`
@@ -97,6 +93,7 @@ Your success in 100 days depends on:
   - Failure cases and fixes
 
 ### Critical Attention Points
+
 - Kernel size selection can destroy useful details.
 - HSV thresholds are very sensitive to lighting.
 - Always test on at least 3 different image conditions.
@@ -106,17 +103,20 @@ Your success in 100 days depends on:
 ## Phase 2 (Day 26-45) - Supervised ML for Vision Tasks
 
 ### Focus Areas
+
 - Logistic regression and softmax baseline
 - Data splitting and leakage prevention
 - Metrics: precision, recall, F1, confusion matrix
 - Basic MLP with `tch`
 
 ### What Matters Most
+
 - Baseline discipline: build a simple baseline first
 - Correct evaluation on imbalanced data
 - Feature quality and preprocessing impact on model stability
 
 ### Deliverables
+
 - Repo: `ml-supervised-rust-100d`
 - Minimum binaries/notebooks-equivalent:
   - `logistic_baseline.rs`
@@ -125,6 +125,7 @@ Your success in 100 days depends on:
 - `evaluation.md` with metric comparison and model errors
 
 ### Critical Attention Points
+
 - Accuracy alone is misleading for imbalanced labels.
 - Data leakage invalidates your entire experiment.
 - Keep train/val/test protocol fixed and documented.
@@ -134,17 +135,20 @@ Your success in 100 days depends on:
 ## Phase 3 (Day 46-70) - Deep Learning Classification
 
 ### Focus Areas
+
 - CNN fundamentals in practice
 - ResNet, MobileNet, VGG (priority order: ResNet -> MobileNet -> VGG)
 - Transfer learning and augmentation strategy
 - Training diagnostics and overfitting control
 
 ### What Matters Most
+
 - Convergence behavior (loss curves, validation gap)
 - Throughput vs accuracy tradeoff
 - Choosing architecture based on deployment constraints
 
 ### Deliverables
+
 - Repo: `dl-classification-rust-100d`
 - Train and compare at least 3 backbones
 - `experiment_tracker.md` including:
@@ -154,6 +158,7 @@ Your success in 100 days depends on:
   - Main failure categories
 
 ### Critical Attention Points
+
 - Poor augmentation causes brittle models.
 - Overfitting usually appears early; monitor val metrics each epoch.
 - MobileNet is often best for real-time constraints.
@@ -163,16 +168,19 @@ Your success in 100 days depends on:
 ## Phase 4 (Day 71-90) - Object Detection + Rust Inference
 
 ### Focus Areas
+
 - Detection metrics: IoU, mAP@0.5, mAP@0.5:0.95
 - YOLO workflow concepts (training + error analysis)
 - Export and deploy inference in Rust (ONNX Runtime + OpenCV)
 
 ### What Matters Most
+
 - Annotation quality (more important than model tweaking in many cases)
 - False positive/false negative analysis
 - Stable real-time inference pipeline
 
 ### Deliverables
+
 - Repo: `object-detection-rust-100d`
 - One custom labeled dataset (target 500+ images)
 - One fine-tuned detector
@@ -180,6 +188,7 @@ Your success in 100 days depends on:
 - `results.md` with mAP/FPS and failure analysis
 
 ### Critical Attention Points
+
 - Bad labels will cap performance hard.
 - NMS/confidence thresholds need scenario-specific tuning.
 - Evaluate in real conditions, not just curated samples.
@@ -189,15 +198,18 @@ Your success in 100 days depends on:
 ## Phase 5 (Day 91-100) - Portfolio and Job Packaging
 
 ### Focus Areas
+
 - Turn technical work into hiring evidence
 - Prepare demo-ready projects
 - Final cleanup for reproducibility
 
 ### Required Portfolio Projects
+
 - Project A: `Smart Quality Inspection`
 - Project B: `Traffic/People Detection Analytics`
 
 ### Must Include for Each Project
+
 - Problem statement
 - Dataset details and label policy
 - Method and architecture choice
@@ -206,6 +218,7 @@ Your success in 100 days depends on:
 - Exact run commands
 
 ### Critical Attention Points
+
 - Recruiters care about measurable impact, not architecture name-dropping.
 - Reproducibility and clarity in README are mandatory.
 - Demo video greatly increases portfolio quality.
@@ -249,6 +262,7 @@ Sun:    Consolidate, cleanup, and next-week plan
 ## 7) Final Rule
 
 If time is limited, prioritize in this order:
+
 1. Object Detection pipeline quality
 2. Classification reliability
 3. Image preprocessing robustness
@@ -256,3 +270,15 @@ If time is limited, prioritize in this order:
 5. Extra theory
 
 In a 100-day sprint, shipping strong, measurable systems beats broad but shallow coverage.
+
+## Day 1 - / Estimate / Key Notes
+
+| What to Learn                                            | Estimate | Key Notes                                                             | Output                                   |
+| -------------------------------------------------------- | -------: | --------------------------------------------------------------------- | ---------------------------------------- |
+| RGB fundamentals: RGB24/BGR24/RGB565, raw byte layout    |       2h | Focus on channel order, stride/padding, raw-to-image reconstruction   | `examples/rgb.rs`, `docs/rgb.md`         |
+| HSV fundamentals: channel meaning + RGB->HSV math        |       2h | Hue wrap-around for red (`0°` and `360°`), normalize ranges correctly | `examples/hsv.rs`, `docs/hsv.md`         |
+| Practical color segmentation with HSV threshold          |       2h | Tune S/V to reduce noise, use mask + highlight for debugging          | Red mask + highlight demo                |
+| YUV system formats: YUV420, NV12, NV21, I420             |       2h | Do not confuse UV order; verify BT.601/BT.709 and full/limited range  | `examples/yuv.rs`, `docs/yuv.md`         |
+| Raw pipeline drill: RGB -> NV12 -> RGB and quality check |     1.5h | Track MAE after conversion to understand chroma-loss impact           | Reconstruction stats + visual comparison |
+
+---
