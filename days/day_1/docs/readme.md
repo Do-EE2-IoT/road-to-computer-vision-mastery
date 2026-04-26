@@ -111,3 +111,11 @@ Typical flow:
 - [ ] Compare grayscale vs color pipeline on the same sample image.
 - [ ] Convert one NV12/YUV420 frame to RGB and inspect channel behavior.
 - [ ] Write a short note on where Lab/gamma help in production.
+
+---
+
+## Docs Index
+
+- `rgb.md`: RGB formats, raw data layout, and raw-to-RGB conversion.
+- `hsv.md`: HSV math, channel interpretation, and red detection notes.
+- `yuv.md`: YUV formats, subsampling, system usage, and YUV<->RGB conversion.

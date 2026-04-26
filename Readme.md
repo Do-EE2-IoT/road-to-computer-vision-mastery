@@ -1,6 +1,18 @@
-# 100-Day Roadmap to Become a **Computer Vision Engineer** (Rust-First)
+# 100-Day Roadmap to Become a **Computer Vision Engineer** 
 
 > Goal: finish a focused, job-ready computer vision track in **100 days**
+
+---
+
+## Day 1 -  / Estimate / Key Notes
+
+| What to Learn | Estimate | Key Notes | Output |
+|---|---:|---|---|
+| RGB fundamentals: RGB24/BGR24/RGB565, raw byte layout | 2h | Focus on channel order, stride/padding, raw-to-image reconstruction | `examples/rgb.rs`, `docs/rgb.md` |
+| HSV fundamentals: channel meaning + RGB->HSV math | 2h | Hue wrap-around for red (`0°` and `360°`), normalize ranges correctly | `examples/hsv.rs`, `docs/hsv.md` |
+| Practical color segmentation with HSV threshold | 2h | Tune S/V to reduce noise, use mask + highlight for debugging | Red mask + highlight demo |
+| YUV system formats: YUV420, NV12, NV21, I420 | 2h | Do not confuse UV order; verify BT.601/BT.709 and full/limited range | `examples/yuv.rs`, `docs/yuv.md` |
+| Raw pipeline drill: RGB -> NV12 -> RGB and quality check | 1.5h | Track MAE after conversion to understand chroma-loss impact | Reconstruction stats + visual comparison |
 
 ---
 
