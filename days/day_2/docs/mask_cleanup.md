@@ -1,113 +1,157 @@
 # Mask Cleanup (Blur + Morphology)
 
-## 1) Cleanup mask là gì?
+## 1) Mask cleanup là gì?
 
-**Mask cleanup** là bước làm sạch ảnh nhị phân sau threshold màu.
-Mục tiêu: biến mask thô (nhiễu, lỗ, biên xấu) thành mask ổn định để contour/detect/count chính xác hơn.
+Mask cleanup là bước làm sạch **binary mask** (`0/255`) sau color threshold.
 
-Đầu vào:
-- Binary mask (`0`/`255`) từ color threshold
-
-Đầu ra:
-- Binary mask sạch hơn, ít false positive/false negative hơn
+Mục tiêu:
+- Giảm noise rời rạc
+- Lấp lỗ trong object
+- Làm biên ổn định để contour/bbox/đếm object chính xác hơn
 
 ---
 
-## 2) Tại sao phải cleanup?
+## 2) Vì sao cần cleanup?
 
-Mask thô thường gặp các lỗi sau:
-- Nhiễu hạt rời rạc (isolated white pixels)
-- Vùng object bị thủng lỗ
-- Biên răng cưa và đứt đoạn
-- Nhiều blob nhỏ không liên quan
+Raw mask từ threshold thường bị:
+- White noise lẻ tẻ (false positive)
+- Lỗ đen trong object (false negative)
+- Biên răng cưa
+- Blob nhỏ không liên quan
 
-Nếu bỏ qua cleanup:
-- contour bị sai
-- bounding box nhảy
-- đo diện tích/đếm object không ổn định
+Nếu bỏ qua cleanup, các bước sau (connected components, contour, tracking) dễ sai hoặc nhảy frame.
 
 ---
 
-## 3) Cấu phần cleanup gồm những gì?
+## 3) Hai lớp xử lý chính
 
 ## 3.1. Pre-filter trước threshold (trên ảnh màu)
 
-Dùng để giảm nhiễu trước khi tạo mask:
-- **Gaussian blur**: nhanh, tốt cho nhiễu ngẫu nhiên
-- **Median blur**: tốt cho salt-pepper
-- **Bilateral filter**: giữ biên tốt hơn nhưng chậm
+- `Gaussian blur`: nhanh, giảm nhiễu ngẫu nhiên
+- `Median blur`: tốt với salt-pepper
+- `Bilateral`: giữ biên tốt, nhưng nặng
 
-## 3.2. Morphology sau threshold (trên mask nhị phân)
+## 3.2. Morphology sau threshold (trên binary mask)
 
-Các phép cơ bản:
-- **Erode**: co vùng trắng, xóa điểm nhiễu nhỏ
-- **Dilate**: nở vùng trắng, nối vùng gần nhau
-- **Opening = Erode -> Dilate**: dọn nhiễu trắng nhỏ
-- **Closing = Dilate -> Erode**: lấp lỗ đen nhỏ trong object
+- `Erode`: co vùng trắng, xóa nhiễu trắng nhỏ
+- `Dilate`: nở vùng trắng, nối vùng gần nhau
+- `Opening = Erode -> Dilate`: dọn nhiễu trắng nhỏ
+- `Closing = Dilate -> Erode`: lấp lỗ đen nhỏ
 
 ---
 
-## 4) Bản chất toán học ngắn gọn
+## 4) Ý nghĩa toán học ngắn gọn
 
-Gọi mask nhị phân là `M`, kernel là `K`:
-- Erode giữ pixel trắng khi vùng lân cận theo `K` đều thỏa điều kiện trắng.
-- Dilate giữ pixel trắng nếu tồn tại ít nhất một pixel trắng trong lân cận theo `K`.
+Gọi mask là `M`, kernel là `K`:
+- Erode giữ pixel trắng khi neighborhood theo `K` đều trắng
+- Dilate giữ pixel trắng nếu có ít nhất 1 pixel trắng trong neighborhood
 
 Intuition:
-- Erode = "strict" (lọc nhiễu)
-- Dilate = "lenient" (bù vùng)
+- Erode: "strict"
+- Dilate: "lenient"
 
 ---
 
-## 5) Kernel và iteration ảnh hưởng ra sao?
+## 5) Kernel và iteration
 
-- Kernel nhỏ (`3x3`): giữ chi tiết, cleanup nhẹ
-- Kernel lớn (`5x5`, `7x7`): cleanup mạnh, dễ mất chi tiết nhỏ
-- Nhiều iteration: hiệu ứng giống tăng độ mạnh phép toán
+- Kernel `3x3`: cleanup nhẹ, giữ chi tiết tốt
+- Kernel `5x5`+: cleanup mạnh, dễ mất chi tiết nhỏ
+- Iteration nhiều: tăng độ mạnh tương đương kernel lớn hơn
 
-Quy tắc thực hành:
-1. Bắt đầu `3x3`, 1 iteration
-2. Tăng dần nếu còn nhiễu
-3. Mỗi lần tăng phải kiểm tra object nhỏ có bị mất không
-
----
-
-## 6) Pipeline gợi ý để bạn code trong `color_filtering.rs`
-
-Pipeline cơ bản:
-
-`RGB -> HSV -> threshold -> raw_mask -> opening -> closing -> final_mask`
-
-Nếu vùng detect quá nhỏ/đứt:
-- thử `closing` trước rồi `opening`
-
-Nếu nhiễu quá nhiều:
-- tăng blur nhẹ trước threshold
-- tăng kernel opening
+Khuyến nghị bắt đầu:
+1. Kernel `3x3`
+2. Iteration = 1
+3. Tăng dần có kiểm soát
 
 ---
 
-## 7) Nên đo gì để biết cleanup tốt hơn?
+## 6) Pipeline gợi ý cho `color_filtering.rs`
 
-- Số lượng connected components (nên giảm blob nhiễu)
-- Tỉ lệ diện tích vùng quan tâm trước/sau cleanup
-- IoU với ground truth (nếu có nhãn)
-- Độ ổn định bbox qua nhiều frame
+```text
+RGB -> HSV -> threshold -> raw_mask -> opening -> closing -> final_mask
+```
+
+Nếu bị mất object nhỏ:
+- giảm kernel
+- giảm iteration
+- thử chỉ `closing`
+
+Nếu còn nhiều nhiễu:
+- tăng opening
+- thêm pre-blur trước threshold
 
 ---
 
-## 8) Lỗi thường gặp khi tự code cleanup
+## 7) Ví dụ ma trận nhanh (3x3 concept)
 
-- Quên clone input trước khi ghi output (ghi đè sai)
-- Dùng index biên không xử lý boundary
-- Kernel quá lớn làm mất object thật
-- Cleanup tốt trên 1 ảnh nhưng fail khi đổi ánh sáng
+## 7.1. Opening xóa noise trắng lẻ
+
+Input:
+```text
+0 0 0 0 0
+0 1 1 1 0
+0 1 1 1 0
+0 1 1 1 0
+0 0 1 0 0
+```
+
+Sau `opening`:
+```text
+0 0 0 0 0
+0 1 1 1 0
+0 1 1 1 0
+0 1 1 1 0
+0 0 0 0 0
+```
+
+## 7.2. Closing lấp lỗ đen
+
+Input:
+```text
+0 0 0 0 0
+0 1 1 1 0
+0 1 0 1 0
+0 1 1 1 0
+0 0 0 0 0
+```
+
+Sau `closing`:
+```text
+0 0 0 0 0
+0 1 1 1 0
+0 1 1 1 0
+0 1 1 1 0
+0 0 0 0 0
+```
 
 ---
 
-## 9) Checklist triển khai nhanh
+## 8) Đo hiệu quả cleanup như thế nào?
 
-- [ ] Có raw mask để so sánh trước/sau
-- [ ] Có ít nhất opening + closing
-- [ ] Tuning kernel theo dữ liệu thật, không hardcode cảm tính
-- [ ] Có log số pixel trắng/contour count để đánh giá
+Nên log trước/sau cleanup:
+- Số pixel trắng
+- Số connected components
+- Tổng diện tích blob hợp lệ
+- IoU mask (nếu có ground truth)
+
+Trong video:
+- Độ ổn định bbox theo frame
+
+---
+
+## 9) Lỗi phổ biến khi tự code
+
+- Ghi đè input khi đang quét kernel (nên output ra buffer mới)
+- Không xử lý boundary
+- Kernel quá lớn làm mất object mỏng
+- Tune chỉ trên 1 ảnh, fail khi đổi ánh sáng
+
+---
+
+## 10) Checklist triển khai
+
+- [ ] Có hiển thị `raw_mask` và `clean_mask`
+- [ ] Có ít nhất `opening + closing`
+- [ ] Có log pixel count trước/sau
+- [ ] Test trên nhiều điều kiện sáng/tối
+- [ ] Tuning theo dữ liệu thực, không hardcode cảm tính
