@@ -245,10 +245,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     win_rgb.set_image("rgb", ImageView::new(ImageInfo::rgb8(even_w, even_h), rgb.as_raw()))?;
     win_recon.set_image("recon", ImageView::new(ImageInfo::rgb8(even_w, even_h), recon.as_raw()))?;
-    win_recon_nv21.set_image(
-        "recon_nv21",
-        ImageView::new(ImageInfo::rgb8(even_w, even_h), recon_nv21.as_raw()),
-    )?;
+    win_recon_nv21.set_image("recon_nv21", ImageView::new(ImageInfo::rgb8(even_w, even_h), recon_nv21.as_raw()))?;
     win_y.set_image("y", ImageView::new(ImageInfo::mono8(even_w, even_h), y_img.as_raw()))?;
     win_mask.set_image("mask", ImageView::new(ImageInfo::mono8(even_w, even_h), bright_mask.as_raw()))?;
 
