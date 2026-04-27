@@ -49,7 +49,61 @@ Ví dụ 2 pixel:
 - Dữ liệu tách thành 3 plane riêng: `R-plane`, `G-plane`, `B-plane`
 - Một số pipeline ML/ISP dùng kiểu này để vectorize tốt hơn
 
----
+### So sánh nhanh với Interleaved RGB
+
+- **Interleaved RGB (HWC)**: `RGB RGB RGB ...`
+- **Planar RGB (CHW)**: `RRR... GGG... BBB...`
+
+### Interleaved RGB layout
+
+```text
+[R G B][R G B][R G B]...
+```
+
+Ví dụ ảnh `2 x 1` (2 pixel):
+- `P1 = (10, 20, 30)`
+- `P2 = (40, 50, 60)`
+
+Memory (byte-by-byte):
+
+```text
+10 20 30   40 50 60
+ R  G  B    R  G  B
+```
+
+Index với pixel `i`:
+- `base = i * 3`
+- `R = raw[base + 0]`
+- `G = raw[base + 1]`
+- `B = raw[base + 2]`
+
+### Planar RGB layout (CHW, deep learning hay dùng)
+
+```text
+[R R R ...][G G G ...][B B B ...]
+```
+
+Cùng ví dụ trên:
+
+```text
+10 40   20 50   30 60
+ R  R    G  G    B  B
+```
+
+Với `plane_size = W * H`:
+- `R[i] = raw[i]`
+- `G[i] = raw[plane_size + i]`
+- `B[i] = raw[2 * plane_size + i]`
+
+### Vì sao Planar thường tốt cho SIMD?
+
+Do mỗi kênh nằm liên tục trong bộ nhớ, CPU/GPU dễ load vector liên tiếp.
+
+Ví dụ: tăng sáng kênh R lên 2 lần.
+- **Interleaved**: phải nhảy bước 3 (`R` nằm ở vị trí `0, 3, 6, ...`)
+- **Planar**: chỉ xử lý 1 đoạn liên tục `R-plane[0..plane_size]`
+
+Kết quả: code đơn giản hơn cho vectorization và thường có cache behavior tốt hơn trong một số pipeline.
 
 ## 3) Raw image data trông như nào?
 

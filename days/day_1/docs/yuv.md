@@ -8,6 +8,16 @@ YUV (thực tế hệ video số thường gần với YCbCr) tách ảnh thành
 
 Ý tưởng cốt lõi: mắt người nhạy với chi tiết độ sáng hơn chi tiết màu. Vì vậy có thể giảm độ phân giải chroma để tiết kiệm băng thông mà chất lượng vẫn chấp nhận được.
 
+### YUV giúp giảm memory như thế nào?
+
+Ví dụ block `2x2` (4 pixel):
+
+- RGB24 cần `4 * 3 = 12 bytes`
+- YUV420 cần `4Y + 1U + 1V = 6 bytes`
+
+Nghĩa là giảm khoảng **50%** dữ liệu so với RGB24.
+
+Lý do: Y (độ sáng) giữ theo từng pixel, còn U/V (màu) được chia sẻ theo block.
 ---
 
 ## 2) Tại sao camera/video ưa dùng YUV?
@@ -110,7 +120,7 @@ Dạng thường dùng:
 
 ---
 
-## 7) NV12 -> RGB: index logic cơ bản
+## 7) NV12 / NV21 -> RGB: index logic cơ bản
 
 Giả sử ảnh kích thước `w x h`:
 - Y plane: `w*h` bytes đầu
@@ -125,9 +135,18 @@ Pixel `(x,y)`:
 
 Rồi áp công thức YUV->RGB.
 
+### Với NV21
+
+NV21 giống NV12 nhưng thứ tự chroma đảo lại:
+
+- `V = vu_plane[vu_row*w + vu_col]`
+- `U = vu_plane[vu_row*w + vu_col + 1]`
+
+Chỉ khác thứ tự `UV` vs `VU`, nhưng nếu đọc nhầm thì ảnh sẽ ám màu rất rõ.
+
 ---
 
-## 8) Rust pseudo-code (NV12 to RGB)
+## 8) Rust pseudo-code (NV12/NV21 to RGB)
 
 ```rust
 fn clamp_u8(v: f32) -> u8 {
@@ -144,6 +163,16 @@ fn yuv_to_rgb_bt601_full(y: u8, u: u8, v: u8) -> (u8, u8, u8) {
     let b = y + 1.772 * u;
 
     (clamp_u8(r), clamp_u8(g), clamp_u8(b))
+}
+
+// NV12: ... U V U V ...
+fn nv12_sample_uv(uv_plane: &[u8], idx: usize) -> (u8, u8) {
+    (uv_plane[idx], uv_plane[idx + 1]) // (U, V)
+}
+
+// NV21: ... V U V U ...
+fn nv21_sample_vu(vu_plane: &[u8], idx: usize) -> (u8, u8) {
+    (vu_plane[idx + 1], vu_plane[idx]) // return (U, V)
 }
 ```
 
@@ -173,3 +202,14 @@ fn yuv_to_rgb_bt601_full(y: u8, u: u8, v: u8) -> (u8, u8, u8) {
 - `yuv.md` (file này): tập trung format system/camera và chuyển đổi màu
 
 Kết hợp 2 tài liệu này sẽ cover được cả góc nhìn thuật toán và góc nhìn hệ thống.
+
+---
+
+## 12) Liên hệ với `examples/yuv.rs`
+
+Example hiện tại đã có cả 2 luồng:
+
+- `RGB -> NV12 -> RGB`
+- `RGB -> NV21 -> RGB`
+
+và in ra MAE để bạn so sánh mức sai khác giữa ảnh gốc và ảnh reconstruct.
