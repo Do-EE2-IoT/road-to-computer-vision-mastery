@@ -1,116 +1,97 @@
 # YUV Notes - Formats, Usage, and RGB Conversion
 
-## 1) YUV là gì?
+## 1) What is YUV?
 
-YUV (thực tế hệ video số thường gần với YCbCr) tách ảnh thành:
-- **Y**: độ sáng (luma)
-- **U/V** (hoặc Cb/Cr): thành phần màu (chroma)
+YUV (in digital video, often close to YCbCr) separates image information into:
+- **Y**: luma (brightness)
+- **U/V** (or Cb/Cr): chroma (color)
 
-Ý tưởng cốt lõi: mắt người nhạy với chi tiết độ sáng hơn chi tiết màu. Vì vậy có thể giảm độ phân giải chroma để tiết kiệm băng thông mà chất lượng vẫn chấp nhận được.
+Core idea: the human visual system is more sensitive to luma detail than chroma detail, so chroma can be subsampled to save bandwidth.
 
-### YUV giúp giảm memory như thế nào?
+### How YUV saves memory
 
-Ví dụ block `2x2` (4 pixel):
+For a `2x2` block (4 pixels):
+- RGB24 uses `4 * 3 = 12 bytes`
+- YUV420 uses `4Y + 1U + 1V = 6 bytes`
 
-- RGB24 cần `4 * 3 = 12 bytes`
-- YUV420 cần `4Y + 1U + 1V = 6 bytes`
-
-Nghĩa là giảm khoảng **50%** dữ liệu so với RGB24.
-
-Lý do: Y (độ sáng) giữ theo từng pixel, còn U/V (màu) được chia sẻ theo block.
----
-
-## 2) Tại sao camera/video ưa dùng YUV?
-
-- Giảm dung lượng truyền và lưu trữ (đặc biệt với 4:2:0)
-- Tối ưu phần cứng ISP, codec, decoder
-- Dễ encode video (H.264/H.265/AV1 pipelines đều tận dụng luma/chroma)
-- Giữ đủ thông tin độ sáng cho tác vụ CV (edge/shape thường phụ thuộc mạnh vào Y)
+That is about **50%** less data than RGB24.
 
 ---
 
-## 3) Các kiểu subsampling phổ biến
+## 2) Why camera/video pipelines prefer YUV
 
-Ký hiệu `4:a:b` mô tả tỉ lệ lấy mẫu chroma theo khối 2x2.
-
-- **4:4:4**: không giảm chroma (chất lượng màu cao, tốn băng thông)
-- **4:2:2**: giảm chroma theo chiều ngang
-- **4:2:0**: giảm chroma cả ngang và dọc (phổ biến nhất cho camera/video)
-
-Tóm tắt nhanh:
-- CV realtime/camera feed: thường gặp `4:2:0`
-- Post-production chất lượng cao: có thể dùng `4:4:4`
+- Lower storage/transmission cost (especially 4:2:0)
+- Better fit for ISP/codec/decoder hardware
+- Efficient video coding pipelines (H.264/H.265/AV1)
+- Keeps luma detail strong for CV tasks (edge/shape)
 
 ---
 
-## 4) Các format YUV hay gặp trong system
+## 3) Common subsampling types
 
-## Planar vs Semi-planar
+Notation `4:a:b` describes chroma sampling rate.
 
-- **Planar**: Y, U, V nằm ở các plane riêng
-- **Semi-planar**: Y riêng, UV/VU interleaved
-
-## Cụ thể
-
-- **I420 (YUV420p)**
-  - Plane thứ tự: `Y` -> `U` -> `V`
-  - Mỗi chroma plane có kích thước bằng `1/4` Y
-
-- **YV12**
-  - Giống I420 nhưng thứ tự chroma đổi: `Y` -> `V` -> `U`
-
-- **NV12**
-  - `Y` plane đầy đủ
-  - Plane thứ 2 interleaved `UVUV...`
-  - Rất phổ biến trong camera/decoder/hardware acceleration
-
-- **NV21**
-  - Giống NV12 nhưng interleaved `VUVU...`
-
-Chú ý: nhầm NV12/NV21 là lỗi rất hay gặp (ảnh bị ám màu mạnh).
+- **4:4:4**: no chroma reduction
+- **4:2:2**: horizontal chroma reduction
+- **4:2:0**: horizontal + vertical chroma reduction (most common)
 
 ---
 
-## 5) Khi nào dùng format nào?
+## 4) Common YUV formats in systems
 
-- **Camera capture / mobile / embedded**: thường `NV12` hoặc `NV21`
-- **Training data pipeline offline**: thường convert về RGB để debug/augment dễ
-- **Realtime CV**: có thể xử lý trực tiếp trên `Y` cho tác vụ edge/motion, chỉ convert RGB khi thật sự cần màu
-- **Encode/decode video**: phần lớn internal là YUV 4:2:0
+### Planar vs Semi-planar
+- **Planar**: Y, U, V in separate planes
+- **Semi-planar**: Y plane + interleaved chroma plane
+
+### Typical formats
+- **I420 (YUV420p)**: `Y -> U -> V`
+- **YV12**: `Y -> V -> U`
+- **NV12**: `Y` + interleaved `UVUV...`
+- **NV21**: `Y` + interleaved `VUVU...`
+
+A very common bug is mixing up NV12 and NV21.
 
 ---
 
-## 6) Convert YUV <-> RGB
+## 5) When to use which format
 
-## 6.1. Điều quan trọng trước khi convert
+- **Camera/mobile/embedded capture**: often `NV12` or `NV21`
+- **Offline training pipelines**: often converted to RGB for augmentation/debug
+- **Realtime CV**: often process `Y` directly for structure-heavy tasks
+- **Video encode/decode internals**: mostly YUV 4:2:0
 
-Phải biết rõ:
-- Chuẩn ma trận màu: **BT.601** hay **BT.709**
-- Dải giá trị: **Limited range** hay **Full range**
+---
 
-Nếu chọn sai, màu sẽ lệch (washed out hoặc ám màu).
+## 6) YUV <-> RGB conversion
 
-## 6.2. Công thức tham khảo (BT.601, Full range)
+### 6.1. Critical prerequisites
 
-Giả sử:
-- `Y` trong `[0,255]`
-- `U`, `V` trong `[0,255]`
+You must know:
+- Color matrix: **BT.601** vs **BT.709**
+- Value range: **Full range** vs **Limited range**
+
+Wrong assumptions cause visible color shifts.
+
+### 6.2. BT.601 full-range (reference)
+
+Given:
+- `Y, U, V in [0,255]`
 - `u = U - 128`, `v = V - 128`
 
-Khi đó:
+Then:
 - `R = Y + 1.402 * v`
 - `G = Y - 0.344136 * u - 0.714136 * v`
 - `B = Y + 1.772 * u`
 
-Sau cùng clamp về `[0,255]`.
+Clamp final values to `[0,255]`.
 
-## 6.3. Công thức tham khảo (BT.601, Limited range)
+### 6.3. BT.601 limited-range (reference)
 
-Thường gặp trong video broadcast:
-- `Y` khoảng `[16,235]`
-- `U/V` khoảng `[16,240]`
+Common in broadcast/video:
+- `Y in [16,235]`
+- `U/V in [16,240]`
 
-Dạng thường dùng:
+Typical integer form:
 - `C = Y - 16`
 - `D = U - 128`
 - `E = V - 128`
@@ -120,33 +101,28 @@ Dạng thường dùng:
 
 ---
 
-## 7) NV12 / NV21 -> RGB: index logic cơ bản
+## 7) NV12 / NV21 -> RGB indexing logic
 
-Giả sử ảnh kích thước `w x h`:
-- Y plane: `w*h` bytes đầu
-- UV plane: `w*h/2` bytes sau (interleaved UV)
+For image `w x h`:
+- Y plane size: `w*h`
+- chroma plane size: `w*h/2`
 
-Pixel `(x,y)`:
+For pixel `(x,y)`:
 - `Y = y_plane[y*w + x]`
-- `uv_row = y/2`
-- `uv_col = (x/2)*2`
-- `U = uv_plane[uv_row*w + uv_col]`
-- `V = uv_plane[uv_row*w + uv_col + 1]`
+- `row = y/2`
+- `col = (x/2)*2`
 
-Rồi áp công thức YUV->RGB.
+NV12:
+- `U = uv_plane[row*w + col]`
+- `V = uv_plane[row*w + col + 1]`
 
-### Với NV21
-
-NV21 giống NV12 nhưng thứ tự chroma đảo lại:
-
-- `V = vu_plane[vu_row*w + vu_col]`
-- `U = vu_plane[vu_row*w + vu_col + 1]`
-
-Chỉ khác thứ tự `UV` vs `VU`, nhưng nếu đọc nhầm thì ảnh sẽ ám màu rất rõ.
+NV21:
+- `V = vu_plane[row*w + col]`
+- `U = vu_plane[row*w + col + 1]`
 
 ---
 
-## 8) Rust pseudo-code (NV12/NV21 to RGB)
+## 8) Rust pseudo-code (NV12/NV21)
 
 ```rust
 fn clamp_u8(v: f32) -> u8 {
@@ -164,52 +140,41 @@ fn yuv_to_rgb_bt601_full(y: u8, u: u8, v: u8) -> (u8, u8, u8) {
 
     (clamp_u8(r), clamp_u8(g), clamp_u8(b))
 }
-
-// NV12: ... U V U V ...
-fn nv12_sample_uv(uv_plane: &[u8], idx: usize) -> (u8, u8) {
-    (uv_plane[idx], uv_plane[idx + 1]) // (U, V)
-}
-
-// NV21: ... V U V U ...
-fn nv21_sample_vu(vu_plane: &[u8], idx: usize) -> (u8, u8) {
-    (vu_plane[idx + 1], vu_plane[idx]) // return (U, V)
-}
 ```
 
 ---
 
-## 9) Lỗi thường gặp trong project thật
+## 9) Common project mistakes
 
-- Nhầm `NV12` với `NV21` (UV đảo nhau)
-- Dùng sai ma trận (BT.601 vs BT.709)
-- Dùng sai range (full vs limited)
-- Không clamp sau convert
-- Quên xử lý stride/padding của frame camera
-
----
-
-## 10) Practical guidance cho CV
-
-- Nếu tác vụ chủ yếu là edge/structure, thử dùng riêng kênh **Y** trước để tăng tốc.
-- Nếu cần semantics theo màu (đỏ/xanh/vàng), convert chính xác sang RGB/HSV và kiểm range rõ ràng.
-- Luôn lưu 1 frame debug và so sánh màu bằng mắt để phát hiện pipeline sai sớm.
+- Mixing up `NV12` and `NV21`
+- Wrong color matrix (BT.601 vs BT.709)
+- Wrong range assumption (full vs limited)
+- Missing clamp after conversion
+- Ignoring frame stride/padding
 
 ---
 
-## 11) Quan hệ với tài liệu Day 1
+## 10) Practical CV guidance
 
-- `hsv.md`: tập trung color segmentation theo HSV
-- `yuv.md` (file này): tập trung format system/camera và chuyển đổi màu
-
-Kết hợp 2 tài liệu này sẽ cover được cả góc nhìn thuật toán và góc nhìn hệ thống.
+- For edge/structure tasks, try processing only channel **Y** first.
+- For color semantics, convert carefully to RGB/HSV and validate ranges.
+- Save debug frames and visually validate color correctness early.
 
 ---
 
-## 12) Liên hệ với `examples/yuv.rs`
+## 11) Relation to Day 1 docs
 
-Example hiện tại đã có cả 2 luồng:
+- `hsv.md`: color segmentation logic
+- `yuv.md` (this file): system/camera format and conversion logic
 
+Together they cover algorithm and system viewpoints.
+
+---
+
+## 12) Relation to `examples/yuv.rs`
+
+Current example includes:
 - `RGB -> NV12 -> RGB`
 - `RGB -> NV21 -> RGB`
 
-và in ra MAE để bạn so sánh mức sai khác giữa ảnh gốc và ảnh reconstruct.
+It also prints MAE so you can compare reconstruction loss.

@@ -254,7 +254,7 @@ impl BlueColorDetector {
 #[show_image::main]
 fn main() -> Result<(), Box<dyn Error>> {
     let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../../resources/images/Big_Blue_Ball.jpg");
+        .join("../../resources/images/blue_balls.png");
 
     let detector = BlueColorDetector::new(path);
     let rgb = detector.rgb_image();

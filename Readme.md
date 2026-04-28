@@ -271,30 +271,30 @@ If time is limited, prioritize in this order:
 
 In a 100-day sprint, shipping strong, measurable systems beats broad but shallow coverage.
 
-## Day 1 - Không Gian Màu Và Bộ Lọc Màu
+## Day 1 - Color Spaces and Color Filtering
 
 | Learn What | Estimate | Key Notes | Output |
 | --- | ---: | --- | --- |
-| RGB fundamentals: RGB24/BGR24/RGB565, raw byte layout | 2h | Nắm channel order, stride/padding, raw-to-image reconstruction | `days/day_1/docs/rgb.md`, `days/day_1/examples/rgb.rs` |
-| HSV fundamentals: channel meaning + RGB->HSV math | 2h | Hue wrap-around, normalize range đúng để threshold ổn định | `days/day_1/docs/hsv.md`, `days/day_1/examples/hsv.rs` |
-| YUV fundamentals: YUV420/NV12/NV21, chroma subsampling | 2h | Không nhầm UV/VU, hiểu full/limited range và BT.601/BT.709 | `days/day_1/docs/yuv.md`, `days/day_1/examples/yuv.rs` |
-| Color filtering cơ bản (threshold + masking) | 2h | Bắt đầu từ HSV, giữ mask thô rõ trước khi cleanup | Mask + highlight demo |
-| So sánh nhanh RGB vs HSV vs YUV theo use-case | 1h | Chọn color space theo mục tiêu bài toán, không dùng theo thói quen | Ghi chú quyết định color space |
+| RGB fundamentals: RGB24/BGR24/RGB565, raw byte layout | 2h | Understand channel order, stride/padding, and raw-to-image reconstruction | `days/day_1/docs/rgb.md`, `days/day_1/examples/rgb.rs` |
+| HSV fundamentals: channel meaning + RGB->HSV math | 2h | Hue wrap-around and proper range normalization for stable thresholding | `days/day_1/docs/hsv.md`, `days/day_1/examples/hsv.rs` |
+| YUV fundamentals: YUV420/NV12/NV21, chroma subsampling | 2h | Avoid UV/VU confusion; understand full/limited range and BT.601/BT.709 | `days/day_1/docs/yuv.md`, `days/day_1/examples/yuv.rs` |
+| Basic color filtering (threshold + masking) | 2h | Start with HSV and keep the raw mask clear before cleanup | Mask + highlight demo |
+| Quick RGB vs HSV vs YUV comparison by use case | 1h | Choose color space by task objective, not by habit | Color-space decision notes |
 
 ---
 
-## Day 2 - Bộ Lọc Màu Và Biến Đổi Hình Thái Học
+## Day 2 - Color Filtering and Morphological Transformations
 
 | Learn What | Estimate | Key Notes | Output |
 | --- | ---: | --- | --- |
-| Color thresholding theo range (`inRange` logic) | 1.5h | Đây là lõi của color filtering, cần tune theo dữ liệu thực | `days/day_2/docs/threshold_and_masking.md` |
-| Multi-range filtering (ví dụ đỏ có 2 dải Hue) | 1h | Dùng OR giữa nhiều mask để tránh miss màu wrap-around | Multi-range mask demo |
-| Channel-wise filtering (`H`, `S`, `V`) | 1h | Không dùng Hue đơn lẻ, luôn kết hợp S/V để giảm nhiễu | Rule set threshold có log |
-| Color masking + overlay visualization | 1h | Luôn xem raw mask và highlight để debug đúng vùng màu | `days/day_2/examples/color_filtering.rs` |
-| Pre-filter trước threshold (Gaussian/Median/Bilateral) | 1h | Chọn filter theo loại noise, tránh làm mờ quá mức | So sánh mask trước/sau pre-filter |
-| Morphology: Erode, Dilate, Opening, Closing | 2h | Opening dọn noise nhỏ, Closing lấp lỗ trong object | `days/day_2/docs/mask_cleanup.md` |
-| Mask cleanup pipeline (`raw -> opening -> closing -> final`) | 1.5h | Tuning kernel/iteration theo object size và điều kiện sáng | Raw vs clean mask + pixel count log |
-| Robustness factors: lighting, shadow, reflection, WB drift | 1h | Test đa điều kiện, không tune trên 1 ảnh | `days/day_2/docs/robustness.md` |
-| Nâng cao: color normalization, color constancy, clustering | 1h | Dùng khi pipeline cơ bản chưa đủ ổn định | Note hướng nâng cấp cho Day 3+ |
+| Color thresholding by range (`inRange` logic) | 1.5h | This is the core of color filtering; tune it on real data | `days/day_2/docs/threshold_and_masking.md` |
+| Multi-range filtering (for example, red has 2 Hue bands) | 1h | Use OR across masks to avoid missing wrap-around colors | Multi-range mask demo |
+| Channel-wise filtering (`H`, `S`, `V`) | 1h | Do not use Hue alone; always combine S/V to reduce noise | Threshold rule set with logs |
+| Color masking + overlay visualization | 1h | Always inspect raw mask and highlight to debug correct color regions | `days/day_2/examples/color_filtering.rs` |
+| Pre-filter before threshold (Gaussian/Median/Bilateral) | 1h | Choose filter by noise type and avoid over-blurring | Compare masks before/after pre-filter |
+| Morphology: Erode, Dilate, Opening, Closing | 2h | Opening removes small noise; Closing fills holes in objects | `days/day_2/docs/mask_cleanup.md` |
+| Mask cleanup pipeline (`raw -> opening -> closing -> final`) | 1.5h | Tune kernel/iterations by object size and lighting conditions | Raw vs clean mask + pixel count log |
+| Robustness factors: lighting, shadow, reflection, WB drift | 1h | Test multiple conditions; do not tune on one image only | `days/day_2/docs/robustness.md` |
+| Advanced: color normalization, color constancy, clustering | 1h | Use when the basic pipeline is not stable enough | Upgrade notes for Day 3+ |
 
 ---

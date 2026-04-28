@@ -1,6 +1,6 @@
 # Day 2 - Color Filtering in Image Processing
 
-> Mục tiêu ngày 2: nắm chắc kỹ thuật lọc màu để tạo mask ổn định trong điều kiện ảnh thực tế (noise, ánh sáng thay đổi, bóng/reflect).
+> Day 2 goal: master color filtering techniques to create stable masks under real-world conditions (noise, lighting changes, shadows/reflections).
 
 ---
 
@@ -8,49 +8,49 @@
 
 **Color Filtering Pipeline**
 
-Bạn cần làm chủ luồng chuẩn:
-1. Chọn color space phù hợp (`HSV/Lab/YCrCb`)
-2. Đặt ngưỡng màu đúng (`threshold/range`)
-3. Làm sạch mask (`blur + morphology`)
-4. Đánh giá chất lượng (`precision/recall/IoU của mask`)
+You should master this standard flow:
+1. Choose the right color space (`HSV/Lab/YCrCb`)
+2. Set proper color thresholds (`threshold/range`)
+3. Clean the mask (`blur + morphology`)
+4. Evaluate quality (`precision/recall/IoU of mask`)
 
 ---
 
-## Core (Quan trọng nhất - học trước)
+## Core (Most Important - Learn First)
 
-1. Color thresholding theo range (`inRange` logic)
-2. Multi-range filtering (ví dụ màu đỏ có 2 dải Hue)
-3. Channel-wise filtering (lọc theo từng kênh)
-4. Color masking và hậu xử lý mask
+1. Color thresholding by range (`inRange` logic)
+2. Multi-range filtering (for example, red has 2 Hue bands)
+3. Channel-wise filtering (constraints per channel)
+4. Color masking and mask post-processing
 
-**Nếu thiếu thời gian, tập trung 3 thứ này trước:**
-- Chọn đúng color space
-- Chọn đúng range
-- Làm sạch mask để giảm false positive
-
----
-
-## Practical (Thực hành bắt buộc)
-
-- So sánh threshold giữa `RGB` vs `HSV`
-- Lọc đỏ/xanh/vàng trong 3 điều kiện ánh sáng khác nhau
-- Tạo binary mask + overlay ảnh gốc
-- Dùng erosion/dilation/opening/closing để giảm noise
-- Tuning threshold có log rõ ràng (không tuning cảm tính)
+**If time is limited, focus on these 3 first:**
+- Choose the right color space
+- Choose the right range
+- Clean the mask to reduce false positives
 
 ---
 
-## System Notes (Yếu tố thực tế ảnh hưởng mạnh)
+## Practical (Required Hands-on)
+
+- Compare thresholding between `RGB` vs `HSV`
+- Filter red/green/yellow in at least 3 lighting conditions
+- Create binary mask + original-image overlay
+- Use erosion/dilation/opening/closing to reduce noise
+- Tune thresholds with clear logs (no guesswork)
+
+---
+
+## System Notes (High-impact Real-world Factors)
 
 - Lighting conditions
 - Camera noise
 - Shadow / reflection
 - White balance drift
-- Sensor color response khác nhau giữa thiết bị
+- Different sensor color responses across devices
 
 ---
 
-## Bonus (Nâng cao)
+## Bonus (Advanced)
 
 - Color normalization
 - White balance correction
@@ -61,16 +61,16 @@ Bạn cần làm chủ luồng chuẩn:
 
 ## Suggested Completion Checklist
 
-- [ ] Tách được object theo màu với mask rõ ràng trong ít nhất 3 điều kiện ánh sáng.
-- [ ] Có pipeline `preprocess -> threshold -> morphology -> evaluation`.
-- [ ] Viết được guideline chọn threshold cho từng màu chính.
-- [ ] Giảm false positive bằng ít nhất 2 kỹ thuật khác nhau.
+- [ ] Segment objects by color with clean masks in at least 3 lighting conditions.
+- [ ] Build a pipeline `preprocess -> threshold -> morphology -> evaluation`.
+- [ ] Write a threshold-selection guideline for key colors.
+- [ ] Reduce false positives using at least 2 different techniques.
 
 ---
 
 ## Docs Index
 
-- `color_filtering_core.md`: nền tảng lọc màu và chọn color space
-- `threshold_and_masking.md`: threshold, multi-range, logic tạo mask
-- `mask_cleanup.md`: blur + morphology + hậu xử lý mask
-- `robustness.md`: chống nhiễu ánh sáng, reflection, white balance
+- `color_filtering_core.md`: color filtering foundation and color-space selection
+- `threshold_and_masking.md`: thresholding, multi-range logic, mask construction
+- `mask_cleanup.md`: blur + morphology + mask post-processing
+- `robustness.md`: handling lighting noise, reflections, and white-balance shifts

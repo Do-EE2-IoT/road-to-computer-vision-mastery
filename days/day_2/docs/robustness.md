@@ -1,44 +1,44 @@
 # Robustness for Color Filtering
 
-## 1) Vấn đề thực tế
+## 1) Real-world issues
 
-Color filtering fail chủ yếu vì:
-- Lighting đổi mạnh
-- Shadow/reflection
-- Auto white balance thay đổi theo frame
-- Camera khác nhau cho màu khác nhau
-
----
-
-## 2) Những gì cần ưu tiên để ổn định
-
-1. Cố định exposure/white balance nếu có thể
-2. Chuẩn hóa input trước threshold
-3. Dùng range mềm và test multi-scene
-4. Thêm điều kiện hình học (area/aspect ratio) sau mask
+Color filtering often fails because of:
+- strong lighting changes
+- shadow/reflection
+- frame-to-frame auto white balance shifts
+- camera-to-camera color response differences
 
 ---
 
-## 3) Kỹ thuật nâng độ bền
+## 2) What to prioritize for stability
+
+1. Lock exposure/white balance if possible
+2. Normalize inputs before thresholding
+3. Use soft ranges and test across scene diversity
+4. Add geometric constraints (area/aspect ratio) after masking
+
+---
+
+## 3) Techniques to improve robustness
 
 - White-balance correction
 - Color constancy (Gray-World, Shades-of-Gray)
-- Histogram matching theo domain
-- Adaptive threshold theo scene brightness
+- Histogram matching for domain alignment
+- Adaptive thresholding by scene brightness
 
 ---
 
-## 4) Đo chất lượng đúng cách
+## 4) Evaluate correctly
 
-- Precision/Recall/F1 cho mask pixel-level
-- IoU trên vùng màu mục tiêu
-- Tracking false positive theo từng loại scene
+- Pixel-level Precision/Recall/F1
+- IoU on target-color regions
+- False-positive analysis by scene type
 
 ---
 
-## 5) Checklist trước khi chốt thuật toán
+## 5) Pre-release checklist
 
 - [ ] Test indoor + outdoor + low-light
-- [ ] Test ít nhất 2 camera/device
-- [ ] Có rule fallback khi ảnh quá tối/quá cháy
-- [ ] Có log threshold version theo từng release
+- [ ] Test at least 2 camera/devices
+- [ ] Define fallback behavior for over-dark/over-exposed frames
+- [ ] Version and log threshold settings for each release

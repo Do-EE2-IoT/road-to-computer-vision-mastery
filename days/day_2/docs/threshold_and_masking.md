@@ -1,48 +1,48 @@
 # Threshold and Masking
 
-## 1) Threshold theo range
+## 1) Range-based thresholding
 
-Một pixel được giữ lại nếu thỏa điều kiện:
+A pixel is kept if it satisfies:
 - `H in [h_low, h_high]`
 - `S in [s_low, s_high]`
 - `V in [v_low, v_high]`
 
-Mask nhị phân:
-- Thỏa điều kiện -> `255`
-- Không thỏa -> `0`
+Binary mask rule:
+- condition true -> `255`
+- condition false -> `0`
 
 ---
 
-## 2) Multi-range (quan trọng)
+## 2) Multi-range (important)
 
-Một số màu cần nhiều khoảng.
-Ví dụ màu đỏ trong HSV:
-- `H in [0, 12]` hoặc `H in [345, 360]`
+Some colors require multiple ranges.
+Example for red in HSV:
+- `H in [0, 12]` or `H in [345, 360]`
 
-Mask cuối = OR của các mask thành phần.
-
----
-
-## 3) Grayscale vs Color mask
-
-- Grayscale threshold: tốt cho độ sáng/shape
-- Color threshold: tốt cho semantic theo màu
-- Nhiều bài toán nên kết hợp cả 2 để giảm nhiễu
+Final mask = OR of sub-masks.
 
 ---
 
-## 4) Quy trình tuning threshold
+## 3) Grayscale vs color masks
 
-1. Thu mẫu ảnh đa điều kiện
-2. Chọn ROI chuẩn cho màu mục tiêu
-3. Thống kê histogram H/S/V
-4. Đặt range ban đầu
-5. Tuning bằng metric (precision/recall/IoU mask)
+- Grayscale threshold: strong for brightness/shape cues
+- Color threshold: strong for semantic color segmentation
+- Many practical pipelines combine both
 
 ---
 
-## 5) Mẹo thực chiến
+## 4) Threshold tuning process
 
-- Luôn khóa range `S` tối thiểu để tránh pixel xám/trắng nhiễu
-- Dùng `V` để loại vùng quá tối
-- Đừng tune bằng 1 ảnh duy nhất
+1. Collect samples across multiple conditions
+2. Define ROI for target color
+3. Inspect H/S/V histograms
+4. Set initial ranges
+5. Tune with metrics (precision/recall/IoU)
+
+---
+
+## 5) Practical tips
+
+- Set a minimum `S` to avoid gray/white noise
+- Use `V` threshold to reject very dark regions
+- Never tune on one image only

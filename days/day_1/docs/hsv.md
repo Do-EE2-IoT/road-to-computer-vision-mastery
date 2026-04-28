@@ -1,93 +1,87 @@
 # HSV Notes + `examples/hsv.rs`
 
-## 1) HSV là gì?
+## 1) What is HSV?
 
-HSV tách thông tin màu theo 3 kênh:
-- **H (Hue)**: loại màu (đỏ, xanh lá, xanh dương...), thường trong khoảng `0..360` độ
-- **S (Saturation)**: độ đậm nhạt của màu, thường `0..1`
-- **V (Value)**: độ sáng, thường `0..1`
+HSV separates color information into 3 channels:
+- **H (Hue)**: color type (red, green, blue...), usually in `0..360` degrees
+- **S (Saturation)**: color intensity, usually `0..1`
+- **V (Value)**: brightness, usually `0..1`
 
-Lợi ích chính: khi làm color segmentation, HSV ổn định hơn RGB trong nhiều điều kiện ánh sáng.
+Main benefit: for color segmentation, HSV is usually more stable than RGB under changing lighting.
 
 ---
 
-## 2) Công thức RGB -> HSV
+## 2) RGB -> HSV Formula
 
-Giả sử pixel RGB là `(R, G, B)` trong khoảng `0..255`.
+Assume an RGB pixel `(R, G, B)` in `0..255`.
 
-### Bước 1: Chuẩn hóa
-
+### Step 1: Normalize
 `r = R / 255`, `g = G / 255`, `b = B / 255`
 
-### Bước 2: Giá trị trung gian
-
+### Step 2: Intermediate values
 - `cmax = max(r, g, b)`
 - `cmin = min(r, g, b)`
 - `delta = cmax - cmin`
 
-### Bước 3: Tính H (Hue)
+### Step 3: Compute H (Hue)
+- If `delta == 0` -> `H = 0`
+- If `cmax == r` -> `H = 60 * (((g - b) / delta) mod 6)`
+- If `cmax == g` -> `H = 60 * (((b - r) / delta) + 2)`
+- If `cmax == b` -> `H = 60 * (((r - g) / delta) + 4)`
 
-- Nếu `delta == 0` -> `H = 0`
-- Nếu `cmax == r` -> `H = 60 * (((g - b) / delta) mod 6)`
-- Nếu `cmax == g` -> `H = 60 * (((b - r) / delta) + 2)`
-- Nếu `cmax == b` -> `H = 60 * (((r - g) / delta) + 4)`
+If `H < 0`, add `360` to map it into `[0, 360)`.
 
-Sau đó nếu `H < 0` thì cộng `360` để đưa về `[0, 360)`.
+### Step 4: Compute S (Saturation)
+- If `cmax == 0` -> `S = 0`
+- Else -> `S = delta / cmax`
 
-### Bước 4: Tính S (Saturation)
-
-- Nếu `cmax == 0` -> `S = 0`
-- Ngược lại -> `S = delta / cmax`
-
-### Bước 5: Tính V (Value)
-
+### Step 5: Compute V (Value)
 `V = cmax`
 
 ---
 
-## 3) Mapping kênh để hiển thị ảnh xám
+## 3) Channel Mapping for Grayscale Visualization
 
-Trong `hsv.rs`, bạn đang map để xem trực quan từng kênh:
+In `hsv.rs`, channels are mapped as:
 - `h_val = (H / 360 * 255) as u8`
 - `s_val = (S * 255) as u8`
 - `v_val = (V * 255) as u8`
 
-Rồi ghi vào `Luma([value])` để tạo ảnh xám cho H/S/V.
+Then saved into `Luma([value])` to display H/S/V as grayscale images.
 
 ---
 
-## 4) Logic detect đỏ trong `hsv.rs`
+## 4) Red Detection Logic in `hsv.rs`
 
-Hàm `is_red(...)` hiện dùng 3 điều kiện kết hợp:
+`is_red(...)` uses 3 combined conditions:
 
-1. **Hue band cho màu đỏ**
-   - `(0..=12)` hoặc `(345..=360)`
-   - Lý do: đỏ nằm ở vùng wrap-around của Hue (gần 0 và gần 360)
+1. **Hue band for red**
+   - `(0..=12)` or `(345..=360)`
+   - Reason: red is near the Hue wrap-around boundary
 
-2. **Ngưỡng Saturation/Value**
+2. **Saturation/Value thresholds**
    - `s >= 0.35`
    - `v >= 0.20`
-   - Mục tiêu: loại màu quá nhạt hoặc quá tối
+   - Purpose: remove weak-color and very dark pixels
 
-3. **Red dominance theo RGB**
-   - `R > G + 15` và `R > B + 15`
-   - Mục tiêu: giảm false positive với cam/nâu
+3. **RGB red dominance**
+   - `R > G + 15` and `R > B + 15`
+   - Purpose: reduce orange/brown false positives
 
-Nếu thỏa điều kiện, pixel được:
-- tô đỏ trong ảnh highlight
-- set trắng trong ảnh mask
+If conditions are satisfied:
+- pixel is painted red on highlight image
+- pixel is set to white in binary mask
 
 ---
 
-## 5) Pipeline đang chạy trong `examples/hsv.rs`
+## 5) Active Pipeline in `examples/hsv.rs`
 
-1. Đọc ảnh từ:
-   - `resources/images/red_ball.jpg`
-2. Convert từng pixel RGB -> HSV
-3. Tạo 3 ảnh xám cho H/S/V
-4. Sinh `red_mask` (nhị phân)
-5. Sinh `highlighted_img` (overlay điểm đỏ)
-6. Hiển thị 6 cửa sổ:
+1. Read image from `resources/images/red_ball.jpg`
+2. Convert each pixel RGB -> HSV
+3. Generate grayscale H/S/V images
+4. Build `red_mask` (binary)
+5. Build `highlighted_img` (red overlay)
+6. Display windows:
    - RGB
    - Red Highlight
    - Red Mask
@@ -97,9 +91,9 @@ Nếu thỏa điều kiện, pixel được:
 
 ---
 
-## 6) Cách chạy
+## 6) Run
 
-Từ workspace root:
+From workspace root:
 
 ```bash
 cargo run -p day_1 --example hsv --release
@@ -107,59 +101,59 @@ cargo run -p day_1 --example hsv --release
 
 ---
 
-## 7) Tuning nhanh khi detect chưa chuẩn
+## 7) Fast Tuning Guide
 
-- Bị miss vùng đỏ:
-  - Mở rộng hue band, ví dụ `0..15` và `340..360`
-  - Giảm `s` hoặc `v` threshold nhẹ
+If red is missed:
+- widen hue bands (for example `0..15` and `340..360`)
+- lower `s` or `v` thresholds slightly
 
-- Bị nhiễu nhiều:
-  - Tăng `s` threshold
-  - Tăng red-dominance margin (`+15 -> +20/+25`)
-  - Thu hẹp hue band
+If noise is high:
+- increase `s` threshold
+- increase red-dominance margin (`+15 -> +20/+25`)
+- narrow hue bands
 
-Test trên nhiều điều kiện: sáng mạnh, thiếu sáng, nền nhiều màu.
-
----
-
-## 8) Ghi chú quan trọng
-
-- Không có một bộ threshold cố định cho mọi ảnh/camera.
-- Chất lượng detect phụ thuộc nhiều vào ánh sáng và cân bằng trắng.
-- Luôn dùng `mask + highlight + H/S/V views` để debug thay vì đoán.
+Always test on multiple conditions: bright, low-light, mixed-color backgrounds.
 
 ---
 
-## 9) Vì sao thường ưa chuộng HSV?
+## 8) Important Notes
 
-HSV được dùng nhiều trong color-based CV vì tách được:
-- **Hue**: thông tin màu
-- **Value**: độ sáng
+- There is no universal threshold set for all cameras/scenes.
+- Detection quality strongly depends on lighting and white balance.
+- Always debug with `mask + highlight + H/S/V views`.
 
-Nên khi ánh sáng thay đổi, ta vẫn dễ giữ điều kiện theo màu hơn so với RGB.
+---
 
-### Liên quan tới detect góc cạnh/shape
+## 9) Why HSV is Often Preferred
 
-HSV không trực tiếp “phát hiện cạnh” như Sobel/Canny, nhưng nó giúp tạo **mask sạch hơn** theo màu.
-Khi mask sạch, bước detect contour/cạnh/góc sau đó sẽ ổn định hơn.
+HSV is popular in color-based CV because it separates:
+- **Hue**: color identity
+- **Value**: brightness
 
-Pipeline phổ biến:
-1. HSV threshold để tách object theo màu
-2. Morphology để làm sạch mask
-3. Canny/Contour để lấy cạnh và hình dạng
+This makes color rules easier to keep stable under lighting changes.
 
-### Ví dụ nhỏ, cụ thể
+### Relation to edge/shape detection
 
-- **Ví dụ 1: Bóng đỏ trên nền nhiễu**
-  - RGB threshold thường nhạy với bóng đổ.
-  - HSV threshold theo Hue đỏ + ngưỡng S/V cho ra mask ổn định hơn.
-  - Từ mask này, contour của quả bóng rõ hơn để đo bán kính.
+HSV does not directly detect edges like Sobel/Canny.
+But it produces cleaner color masks, which makes contour/edge/shape extraction more stable.
 
-- **Ví dụ 2: Biển báo đỏ ngoài trời**
-  - Cùng biển báo nhưng sáng trưa và chiều muộn có độ sáng khác nhau.
-  - Dùng HSV giúp giữ vùng đỏ tốt hơn, rồi mới tìm polygon/góc của biển báo.
+Common pipeline:
+1. HSV threshold for color segmentation
+2. Morphology for mask cleanup
+3. Canny/Contour for shape extraction
 
-- **Ví dụ 3: Đếm vật thể theo màu trên băng chuyền**
-  - Tách từng màu bằng Hue trước.
-  - Sau đó dùng connected components/contour để đếm.
-  - Ít nhiễu hơn xử lý trực tiếp trên RGB.
+### Small practical examples
+
+- **Red ball on noisy background**
+  - RGB threshold is often sensitive to shadows.
+  - HSV threshold with S/V limits is usually more stable.
+  - Better contour -> better radius estimation.
+
+- **Red traffic sign outdoors**
+  - Bright noon vs late-afternoon lighting differs a lot.
+  - HSV usually keeps red regions more consistent before polygon detection.
+
+- **Color-based counting on conveyor belt**
+  - Segment by Hue first.
+  - Then use connected components/contours for counting.
+  - Often less noisy than direct RGB processing.

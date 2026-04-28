@@ -1,39 +1,39 @@
 # Color Filtering Core
 
-## 1) Color filtering là gì?
+## 1) What is color filtering?
 
-Color filtering là quá trình giữ lại pixel thuộc dải màu mục tiêu và loại phần còn lại.
-Đầu ra thường là:
+Color filtering keeps pixels within a target color range and removes the rest.
+Typical outputs:
 - Binary mask (`0/255`)
-- Ảnh highlight vùng màu quan tâm
+- Highlighted image of selected regions
 
 ---
 
-## 2) Chọn color space đúng là bước quyết định
+## 2) Color-space choice is the key decision
 
-- `RGB`: trực quan, nhưng nhạy ánh sáng
-- `HSV`: tách màu (H) khỏi sáng (V), rất hợp threshold màu
-- `Lab`: tốt khi cần ổn định cảm nhận màu
-- `YCrCb`: hữu ích cho một số bài toán skin-color / broadcast
+- `RGB`: intuitive for display, but sensitive to illumination
+- `HSV`: separates hue from brightness, strong default for color thresholding
+- `Lab`: useful when perceptual color consistency matters
+- `YCrCb`: useful in some skin/broadcast workflows
 
-Quy tắc nhanh:
-- Bài toán segmentation theo màu: bắt đầu với `HSV`
-- Nếu ánh sáng phức tạp: thử `Lab` hoặc thêm normalize
+Quick rule:
+- Start with `HSV` for color segmentation
+- If lighting is difficult, evaluate `Lab` or normalization
 
 ---
 
-## 3) Kỹ thuật cốt lõi
+## 3) Core techniques
 
 - Single-range threshold
-- Multi-range threshold (màu wrap-around, như đỏ)
-- Channel-wise constraints (`H in [a,b]`, `S > s_min`, `V > v_min`)
+- Multi-range threshold (for wrap-around colors like red)
+- Channel-wise constraints (`H`, `S`, `V` ranges)
 - Mask refinement
 
 ---
 
-## 4) Sai lầm thường gặp
+## 4) Common mistakes
 
-- Chỉ dùng 1 ngưỡng hue, bỏ qua S/V
-- Dùng threshold cứng cho mọi camera
-- Không test ở điều kiện ánh sáng khác nhau
-- Không có bước hậu xử lý mask
+- Using Hue alone without S/V constraints
+- Reusing one threshold set across all cameras
+- Not testing across multiple lighting conditions
+- Skipping mask post-processing
