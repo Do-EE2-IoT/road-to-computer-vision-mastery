@@ -18,17 +18,19 @@ Linear Regression là mô hình dùng để dự đoán một giá trị liên t
 ## 2) Bài toán và ký hiệu
 
 Giả sử một mẫu dữ liệu có:
-- `x = [x1, x2, ..., xd]` (d đặc trưng)
+- `x = [x_1, x_2, ..., x_d]` (d đặc trưng)
 - `y` là nhãn thật
 
 Mô hình dự đoán:
 
-`y_hat = w1*x1 + w2*x2 + ... + wd*xd + b`
+$$
+\hat{y} = w_1x_1 + w_2x_2 + ... + w_dx_d + b
+$$
 
 Trong đó:
-- `w1..wd` là trọng số
+- `w_1..w_d` là trọng số
 - `b` là bias (intercept)
-- `y_hat` là giá trị mô hình dự đoán
+- `\hat{y}` là giá trị dự đoán
 
 Mục tiêu học máy là tìm bộ `w, b` sao cho dự đoán gần dữ liệu thật nhất.
 
@@ -48,7 +50,9 @@ Nghĩa là trọng tâm nằm ở tối ưu hóa hàm mất mát (loss function)
 
 Sai số của một điểm:
 
-`e_i = y_i - y_hat_i`
+$$
+e_i = y_i - \hat{y}_i
+$$
 
 Nếu cộng trực tiếp sai số:
 - điểm dương và âm có thể triệt tiêu nhau
@@ -56,7 +60,9 @@ Nếu cộng trực tiếp sai số:
 
 Vì vậy ta dùng bình phương sai số:
 
-`e_i^2 = (y_i - y_hat_i)^2`
+$$
+e_i^2 = (y_i - \hat{y}_i)^2
+$$
 
 Lợi ích:
 1. luôn không âm
@@ -69,11 +75,15 @@ Lợi ích:
 
 Với `N` mẫu:
 
-`MSE = (1/N) * sum((y_i - y_hat_i)^2)`
+$$
+\mathrm{MSE} = \frac{1}{N}\sum_{i=1}^{N}(y_i - \hat{y}_i)^2
+$$
 
 Trong nhiều tài liệu tối ưu sẽ dùng:
 
-`J(w,b) = (1/(2N)) * sum((y_i - y_hat_i)^2)`
+$$
+J(w,b) = \frac{1}{2N}\sum_{i=1}^{N}(y_i - \hat{y}_i)^2
+$$
 
 Hệ số `1/2` chỉ để khi đạo hàm triệt tiêu số 2 cho gọn, không làm thay đổi nghiệm tối ưu.
 
@@ -84,27 +94,33 @@ Hệ số `1/2` chỉ để khi đạo hàm triệt tiêu số 2 cho gọn, khô
 ### 6.1 Dạng vector
 
 Gộp bias vào vector đặc trưng:
-- `x_bar = [1, x1, x2, ..., xd]`
-- `w_bar = [b, w1, w2, ..., wd]^T`
+- `\bar{x} = [1, x_1, x_2, ..., x_d]`
+- `\bar{w} = [b, w_1, w_2, ..., w_d]^T`
 
 Khi đó:
 
-`y_hat = x_bar * w_bar`
+$$
+\hat{y} = \bar{x}\,\bar{w}
+$$
 
 ### 6.2 Dạng ma trận
 
 Cho toàn bộ dataset:
-- `X` có kích thước `N x (d+1)` (đã thêm cột 1 cho bias)
-- `w` có kích thước `(d+1) x 1`
-- `y` có kích thước `N x 1`
+- `X` có kích thước `N \times (d+1)` (đã thêm cột 1 cho bias)
+- `w` có kích thước `(d+1) \times 1`
+- `y` có kích thước `N \times 1`
 
 Dự đoán toàn bộ:
 
-`y_hat = Xw`
+$$
+\hat{y} = Xw
+$$
 
 Loss:
 
-`J(w) = (1/(2N)) * ||y - Xw||^2`
+$$
+J(w) = \frac{1}{2N}\lVert y - Xw \rVert^2
+$$
 
 ---
 
@@ -112,9 +128,11 @@ Loss:
 
 Có 2 hướng chính:
 
-## 7.1 Normal Equation (nghiệm đóng)
+### 7.1 Normal Equation (nghiệm đóng)
 
-`w = (X^T X)^(-1) X^T y`
+$$
+w = (X^T X)^{-1} X^T y
+$$
 
 Ưu điểm:
 - không cần lặp
@@ -126,16 +144,20 @@ Nhược điểm:
 
 Nếu không nghịch đảo được, dùng pseudo-inverse:
 
-`w = X^+ y`
+$$
+w = X^+ y
+$$
 
-## 7.2 Gradient Descent (tối ưu lặp)
+### 7.2 Gradient Descent (tối ưu lặp)
 
 Cập nhật theo gradient:
 
-`w := w - alpha * dJ/dw`
+$$
+w \leftarrow w - \alpha\frac{\partial J}{\partial w}
+$$
 
 Trong đó:
-- `alpha` là learning rate
+- `\alpha` là learning rate
 - lặp nhiều bước đến khi hội tụ
 
 Ưu điểm:
@@ -150,13 +172,23 @@ Nhược điểm:
 
 ## 8) Gradient của Linear Regression (dạng vector)
 
-Với `J(w) = (1/(2N)) * ||y - Xw||^2`, ta có:
+Với:
 
-`dJ/dw = (1/N) * X^T (Xw - y)`
+$$
+J(w) = \frac{1}{2N}\lVert y - Xw \rVert^2
+$$
+
+Ta có:
+
+$$
+\frac{\partial J}{\partial w} = \frac{1}{N}X^T(Xw - y)
+$$
 
 Bước cập nhật:
 
-`w := w - alpha * (1/N) * X^T (Xw - y)`
+$$
+w \leftarrow w - \alpha\cdot \frac{1}{N}X^T(Xw - y)
+$$
 
 ---
 
@@ -200,20 +232,29 @@ Nếu vi phạm mạnh, chất lượng mô hình giảm hoặc hệ số khó d
 
 ## 12) Overfitting, underfitting và regularization
 
-## 12.1 Underfitting
+### 12.1 Underfitting
 - mô hình quá đơn giản
 - train error và val error đều cao
 
-## 12.2 Overfitting
+### 12.2 Overfitting
 - mô hình học quá sát train set
 - train error thấp nhưng val/test error cao
 
-## 12.3 Regularization
+### 12.3 Regularization
 
 Thêm penalty để hạn chế trọng số quá lớn:
 
-- **Ridge (L2)**: thêm `lambda * ||w||^2`
-- **Lasso (L1)**: thêm `lambda * ||w||_1`
+- **Ridge (L2)**:
+
+$$
+J_{ridge} = J + \lambda\lVert w \rVert^2
+$$
+
+- **Lasso (L1)**:
+
+$$
+J_{lasso} = J + \lambda\lVert w \rVert_1
+$$
 
 Tác dụng:
 - giảm overfitting
@@ -224,14 +265,16 @@ Tác dụng:
 ## 13) Vì sao gọi là "linear"?
 
 Điểm rất hay bị hiểu sai:
-- "Linear Regression" nghĩa là **tuyến tính theo tham số `w`**,
-- không bắt buộc dữ liệu đầu vào phải tuyến tính nguyên bản.
+- "Linear Regression" nghĩa là **tuyến tính theo tham số `w`**
+- không bắt buộc dữ liệu đầu vào phải tuyến tính nguyên bản
 
 Ví dụ:
 
-`y_hat = w1*x + w2*x^2 + w3*sin(x)`
+$$
+\hat{y} = w_1x + w_2x^2 + w_3\sin(x)
+$$
 
-Vẫn là linear regression nếu coi `[x, x^2, sin(x)]` là các feature.
+Vẫn là linear regression nếu coi `[x, x^2, \sin(x)]` là các feature.
 
 ---
 
@@ -248,7 +291,7 @@ Vẫn là linear regression nếu coi `[x, x^2, sin(x)]` là các feature.
 
 ## 15) Checklist tự học nhanh
 
-- [ ] Hiểu rõ công thức dự đoán `y_hat`
+- [ ] Hiểu rõ công thức dự đoán `\hat{y}`
 - [ ] Tự suy ra hoặc hiểu gradient `X^T(Xw - y)`
 - [ ] Implement được train loop gradient descent
 - [ ] So sánh Normal Equation vs Gradient Descent

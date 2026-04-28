@@ -15,28 +15,44 @@ Trọng tâm:
 ## 2) Bản chất của Linear Regression
 
 Cho dữ liệu:
-- `X`: ma trận đặc trưng, kích thước `N x d`
+- `X`: ma trận đặc trưng, kích thước `N \times d`
 - `y`: vector nhãn thật, kích thước `N`
 
 Mô hình:
 
-`y_hat = Xw + b`
+$$
+\hat{y} = Xw + b
+$$
 
-Mục tiêu: tìm `w, b` để `y_hat` gần `y` nhất theo MSE.
+Mục tiêu: tìm `w, b` để $\hat{y}$ gần `y` nhất theo MSE.
 
-Loss:
+Hàm mất mát:
 
-`J(w,b) = (1/(2N)) * sum((y_hat_i - y_i)^2)`
+$$
+J(w,b) = \frac{1}{2N}\sum_{i=1}^{N}(\hat{y}_i - y_i)^2
+$$
 
 Gradient:
 
-- `dw = (1/N) * X^T (y_hat - y)`
-- `db = (1/N) * sum(y_hat - y)`
+$$
+\frac{\partial J}{\partial w} = \frac{1}{N}X^T(\hat{y} - y)
+$$
 
-Cập nhật:
+$$
+\frac{\partial J}{\partial b} = \frac{1}{N}\sum_{i=1}^{N}(\hat{y}_i - y_i)
+$$
 
-- `w = w - lr * dw`
-- `b = b - lr * db`
+Cập nhật tham số:
+
+$$
+w \leftarrow w - \eta \frac{\partial J}{\partial w}
+$$
+
+$$
+b \leftarrow b - \eta \frac{\partial J}{\partial b}
+$$
+
+Trong đó $\eta$ là learning rate.
 
 ---
 
@@ -56,7 +72,7 @@ Bạn có thể tách module như sau:
 
 ## 4) Các hàm nên có (quan trọng)
 
-## 4.1. Struct mô hình
+### 4.1. Struct mô hình
 
 ```rust
 pub struct LinearRegression {
@@ -67,7 +83,7 @@ pub struct LinearRegression {
 
 ---
 
-## 4.2. Khởi tạo tham số
+### 4.2. Khởi tạo tham số
 
 ```rust
 pub fn new(n_features: usize) -> Self
@@ -79,18 +95,21 @@ Gợi ý:
 
 ---
 
-## 4.3. Dự đoán 1 mẫu
+### 4.3. Dự đoán 1 mẫu
 
 ```rust
 fn predict_one(&self, x: &[f64]) -> f64
 ```
 
 Bản chất:
-- dot product `w·x` + `b`
+
+$$
+\hat{y} = w^T x + b
+$$
 
 ---
 
-## 4.4. Dự đoán batch
+### 4.4. Dự đoán batch
 
 ```rust
 pub fn predict_batch(&self, x: &[Vec<f64>]) -> Vec<f64>
@@ -101,19 +120,21 @@ Bản chất:
 
 ---
 
-## 4.5. Tính loss MSE
+### 4.5. Tính loss MSE
 
 ```rust
 pub fn mse_loss(y_true: &[f64], y_pred: &[f64]) -> f64
 ```
 
 Bản chất:
-- trung bình bình phương sai số
-- có thể thêm `0.5` nếu bạn muốn khớp công thức gradient gọn
+
+$$
+\mathrm{MSE} = \frac{1}{N}\sum_{i=1}^{N}(y_i - \hat{y}_i)^2
+$$
 
 ---
 
-## 4.6. Tính gradient
+### 4.6. Tính gradient
 
 ```rust
 fn compute_gradients(&self, x: &[Vec<f64>], y: &[f64]) -> (Vec<f64>, f64)
@@ -128,9 +149,21 @@ Bản chất:
 2. Tính residual `err = y_hat - y`
 3. Tích lũy gradient từng feature
 
+Với từng feature $j$:
+
+$$
+dw_j = \frac{1}{N}\sum_{i=1}^{N} err_i\,x_{ij}
+$$
+
+Và:
+
+$$
+db = \frac{1}{N}\sum_{i=1}^{N} err_i
+$$
+
 ---
 
-## 4.7. Cập nhật tham số
+### 4.7. Cập nhật tham số
 
 ```rust
 fn apply_gradients(&mut self, dw: &[f64], db: f64, lr: f64)
@@ -138,7 +171,7 @@ fn apply_gradients(&mut self, dw: &[f64], db: f64, lr: f64)
 
 ---
 
-## 4.8. Hàm train chính
+### 4.8. Hàm train chính
 
 ```rust
 pub fn fit(&mut self, x: &[Vec<f64>], y: &[f64], epochs: usize, lr: f64)
@@ -172,17 +205,20 @@ for epoch in 1..=epochs:
 
 ## 6) Công thức kiểm thử nhanh để tránh code sai
 
-## 6.1. Toy dataset tuyến tính hoàn hảo
+### 6.1. Toy dataset tuyến tính hoàn hảo
 
 Ví dụ sinh dữ liệu:
-- `y = 2*x1 + 3*x2 + 5`
+
+$$
+y = 2x_1 + 3x_2 + 5
+$$
 
 Nếu code đúng và train đủ lâu:
 - `w` sẽ gần `[2, 3]`
 - `b` sẽ gần `5`
 - loss về gần `0`
 
-## 6.2. Kiểm tra loss phải giảm
+### 6.2. Kiểm tra loss phải giảm
 
 - Epoch đầu loss cao
 - Qua nhiều epoch loss giảm dần
@@ -248,7 +284,7 @@ impl LinearRegression {
 - [ ] Bạn tự viết được train loop Linear Regression
 - [ ] Loss giảm ổn định qua epoch
 - [ ] Mô hình học đúng trên toy dataset
-- [ ] Bạn giải thích được vì sao gradient có dạng `X^T(y_hat - y)`
+- [ ] Bạn giải thích được vì sao gradient có dạng $X^T(\hat{y} - y)$
 - [ ] Bạn biết debug khi mô hình không hội tụ
 
 Khi tick hết checklist này, bạn đã nắm rất chắc nền tảng cho các mô hình tiếp theo.
