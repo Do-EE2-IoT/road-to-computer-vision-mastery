@@ -94,8 +94,14 @@ Hệ số `1/2` chỉ để khi đạo hàm triệt tiêu số 2 cho gọn, khô
 ### 6.1 Dạng vector
 
 Gộp bias vào vector đặc trưng:
-- `\bar{x} = [1, x_1, x_2, ..., x_d]`
-- `\bar{w} = [b, w_1, w_2, ..., w_d]^T`
+
+$$
+\bar{x} = [1, x_1, x_2, ..., x_d]
+$$
+
+$$
+\bar{w} = [b, w_1, w_2, ..., w_d]^T
+$$
 
 Khi đó:
 

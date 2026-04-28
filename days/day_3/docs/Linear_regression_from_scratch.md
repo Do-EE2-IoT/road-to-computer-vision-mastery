@@ -18,6 +18,17 @@ Cho dữ liệu:
 - `X`: ma trận đặc trưng, kích thước `N \times d`
 - `y`: vector nhãn thật, kích thước `N`
 
+Dạng một mẫu (để thấy rõ bản chất) có thể viết:
+
+$$
+\bar{x} = [1, x_1, x_2, ..., x_d],\qquad
+\bar{w} = [b, w_1, w_2, ..., w_d]^T
+$$
+
+$$
+\hat{y} = \bar{x}\,\bar{w}
+$$
+
 Mô hình:
 
 $$
