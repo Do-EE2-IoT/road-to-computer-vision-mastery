@@ -271,14 +271,30 @@ If time is limited, prioritize in this order:
 
 In a 100-day sprint, shipping strong, measurable systems beats broad but shallow coverage.
 
-## Day 1 - / Estimate / Key Notes
+## Day 1 - Không Gian Màu Và Bộ Lọc Màu
 
-| What to Learn                                            | Estimate | Key Notes                                                             | Output                                   |
-| -------------------------------------------------------- | -------: | --------------------------------------------------------------------- | ---------------------------------------- |
-| RGB fundamentals: RGB24/BGR24/RGB565, raw byte layout    |       2h | Focus on channel order, stride/padding, raw-to-image reconstruction   | `examples/rgb.rs`, `docs/rgb.md`         |
-| HSV fundamentals: channel meaning + RGB->HSV math        |       2h | Hue wrap-around for red (`0°` and `360°`), normalize ranges correctly | `examples/hsv.rs`, `docs/hsv.md`         |
-| Practical color segmentation with HSV threshold          |       2h | Tune S/V to reduce noise, use mask + highlight for debugging          | Red mask + highlight demo                |
-| YUV system formats: YUV420, NV12, NV21, I420             |       2h | Do not confuse UV order; verify BT.601/BT.709 and full/limited range  | `examples/yuv.rs`, `docs/yuv.md`         |
-| Raw pipeline drill: RGB -> NV12 -> RGB and quality check |     1.5h | Track MAE after conversion to understand chroma-loss impact           | Reconstruction stats + visual comparison |
+| Learn What | Estimate | Key Notes | Output |
+| --- | ---: | --- | --- |
+| RGB fundamentals: RGB24/BGR24/RGB565, raw byte layout | 2h | Nắm channel order, stride/padding, raw-to-image reconstruction | `days/day_1/docs/rgb.md`, `days/day_1/examples/rgb.rs` |
+| HSV fundamentals: channel meaning + RGB->HSV math | 2h | Hue wrap-around, normalize range đúng để threshold ổn định | `days/day_1/docs/hsv.md`, `days/day_1/examples/hsv.rs` |
+| YUV fundamentals: YUV420/NV12/NV21, chroma subsampling | 2h | Không nhầm UV/VU, hiểu full/limited range và BT.601/BT.709 | `days/day_1/docs/yuv.md`, `days/day_1/examples/yuv.rs` |
+| Color filtering cơ bản (threshold + masking) | 2h | Bắt đầu từ HSV, giữ mask thô rõ trước khi cleanup | Mask + highlight demo |
+| So sánh nhanh RGB vs HSV vs YUV theo use-case | 1h | Chọn color space theo mục tiêu bài toán, không dùng theo thói quen | Ghi chú quyết định color space |
+
+---
+
+## Day 2 - Bộ Lọc Màu Và Biến Đổi Hình Thái Học
+
+| Learn What | Estimate | Key Notes | Output |
+| --- | ---: | --- | --- |
+| Color thresholding theo range (`inRange` logic) | 1.5h | Đây là lõi của color filtering, cần tune theo dữ liệu thực | `days/day_2/docs/threshold_and_masking.md` |
+| Multi-range filtering (ví dụ đỏ có 2 dải Hue) | 1h | Dùng OR giữa nhiều mask để tránh miss màu wrap-around | Multi-range mask demo |
+| Channel-wise filtering (`H`, `S`, `V`) | 1h | Không dùng Hue đơn lẻ, luôn kết hợp S/V để giảm nhiễu | Rule set threshold có log |
+| Color masking + overlay visualization | 1h | Luôn xem raw mask và highlight để debug đúng vùng màu | `days/day_2/examples/color_filtering.rs` |
+| Pre-filter trước threshold (Gaussian/Median/Bilateral) | 1h | Chọn filter theo loại noise, tránh làm mờ quá mức | So sánh mask trước/sau pre-filter |
+| Morphology: Erode, Dilate, Opening, Closing | 2h | Opening dọn noise nhỏ, Closing lấp lỗ trong object | `days/day_2/docs/mask_cleanup.md` |
+| Mask cleanup pipeline (`raw -> opening -> closing -> final`) | 1.5h | Tuning kernel/iteration theo object size và điều kiện sáng | Raw vs clean mask + pixel count log |
+| Robustness factors: lighting, shadow, reflection, WB drift | 1h | Test đa điều kiện, không tune trên 1 ảnh | `days/day_2/docs/robustness.md` |
+| Nâng cao: color normalization, color constancy, clustering | 1h | Dùng khi pipeline cơ bản chưa đủ ổn định | Note hướng nâng cấp cho Day 3+ |
 
 ---
