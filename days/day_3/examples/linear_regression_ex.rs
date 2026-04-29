@@ -1,4 +1,5 @@
 // Y = w. X , w is fixed vector, X, Y --> N
+// This code implement Gradient Decent 
 
 struct LinearRegression {
     w: Vec<f64>,
