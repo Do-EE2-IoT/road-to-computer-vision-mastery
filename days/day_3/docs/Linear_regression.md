@@ -1,4 +1,4 @@
-# Linear Regression (Hồi Quy Tuyến Tính) - Tài Liệu Chi Tiết
+# Linear Regression (Hồi Quy Tuyến Tính) - Tài Liệu Hoàn Chỉnh
 
 ## 1) Linear Regression là gì?
 
@@ -18,8 +18,8 @@ Linear Regression là mô hình dùng để dự đoán một giá trị liên t
 ## 2) Bài toán và ký hiệu
 
 Giả sử một mẫu dữ liệu có:
-- `x = [x_1, x_2, ..., x_d]` (d đặc trưng)
-- `y` là nhãn thật
+- $x = [x_1, x_2, ..., x_d]$ (d đặc trưng)
+- $y$ là nhãn thật
 
 Mô hình dự đoán:
 
@@ -28,18 +28,18 @@ $$
 $$
 
 Trong đó:
-- `w_1..w_d` là trọng số
-- `b` là bias (intercept)
-- `\hat{y}` là giá trị dự đoán
+- $w_1..w_d$ là trọng số
+- $b$ là bias (intercept)
+- $\hat{y}$ là giá trị dự đoán
 
-Mục tiêu học máy là tìm bộ `w, b` sao cho dự đoán gần dữ liệu thật nhất.
+Mục tiêu học máy là tìm bộ $w, b$ sao cho dự đoán gần dữ liệu thật nhất.
 
 ---
 
 ## 3) Trực giác quan trọng
 
 Linear Regression không phải “thế số để tính”, mà là:
-- học trọng số `w`
+- học trọng số $w$
 - sao cho tổng sai số trên toàn bộ tập dữ liệu là nhỏ nhất
 
 Nghĩa là trọng tâm nằm ở tối ưu hóa hàm mất mát (loss function).
@@ -73,7 +73,7 @@ Lợi ích:
 
 ## 5) Hàm mất mát (MSE)
 
-Với `N` mẫu:
+Với $N$ mẫu:
 
 $$
 \mathrm{MSE} = \frac{1}{N}\sum_{i=1}^{N}(y_i - \hat{y}_i)^2
@@ -85,7 +85,7 @@ $$
 J(w,b) = \frac{1}{2N}\sum_{i=1}^{N}(y_i - \hat{y}_i)^2
 $$
 
-Hệ số `1/2` chỉ để khi đạo hàm triệt tiêu số 2 cho gọn, không làm thay đổi nghiệm tối ưu.
+Hệ số $\frac{1}{2}$ chỉ để khi đạo hàm triệt tiêu số 2 cho gọn, không làm thay đổi nghiệm tối ưu.
 
 ---
 
@@ -112,9 +112,9 @@ $$
 ### 6.2 Dạng ma trận
 
 Cho toàn bộ dataset:
-- `X` có kích thước `N \times (d+1)` (đã thêm cột 1 cho bias)
-- `w` có kích thước `(d+1) \times 1`
-- `y` có kích thước `N \times 1`
+- $X$ có kích thước $N \times (d+1)$ (đã thêm cột 1 cho bias)
+- $w$ có kích thước $(d+1) \times 1$
+- $y$ có kích thước $N \times 1$
 
 Dự đoán toàn bộ:
 
@@ -146,7 +146,7 @@ $$
 
 Nhược điểm:
 - tính nghịch đảo ma trận tốn chi phí lớn khi số feature cao
-- có thể gặp vấn đề số nếu `X^T X` suy biến
+- có thể gặp vấn đề số nếu $X^T X$ suy biến
 
 Nếu không nghịch đảo được, dùng pseudo-inverse:
 
@@ -163,7 +163,7 @@ w \leftarrow w - \alpha\frac{\partial J}{\partial w}
 $$
 
 Trong đó:
-- `\alpha` là learning rate
+- $\alpha$ là learning rate
 - lặp nhiều bước đến khi hội tụ
 
 Ưu điểm:
@@ -193,14 +193,22 @@ $$
 Bước cập nhật:
 
 $$
-w \leftarrow w - \alpha\cdot \frac{1}{N}X^T(Xw - y)
+w \leftarrow w - \alpha \cdot \frac{1}{N}X^T(Xw - y)
+$$
+
+Nếu tách bias riêng:
+
+$$
+\frac{\partial J}{\partial b} = \frac{1}{N}\sum_{i=1}^{N}(\hat{y}_i - y_i),
+\qquad
+b \leftarrow b - \alpha\frac{\partial J}{\partial b}
 $$
 
 ---
 
 ## 9) Quy trình triển khai thực tế
 
-1. Chuẩn bị dữ liệu `X, y`
+1. Chuẩn bị dữ liệu $X, y$
 2. Chia tập train/validation/test
 3. Tiền xử lý:
    - xử lý missing values
@@ -216,7 +224,7 @@ $$
 - **MAE**: trung bình sai số tuyệt đối
 - **MSE**: trung bình bình phương sai số
 - **RMSE**: căn bậc hai của MSE (cùng đơn vị với y)
-- **R² (coefficient of determination)**: mức độ giải thích phương sai
+- **R²**: mức độ giải thích phương sai
 
 Gợi ý dùng:
 - Nếu muốn phạt mạnh outlier: ưu tiên MSE/RMSE
@@ -236,7 +244,7 @@ Nếu vi phạm mạnh, chất lượng mô hình giảm hoặc hệ số khó d
 
 ---
 
-## 12) Overfitting, underfitting và regularization
+## 12) Overfitting, Underfitting và Regularization
 
 ### 12.1 Underfitting
 - mô hình quá đơn giản
@@ -250,13 +258,13 @@ Nếu vi phạm mạnh, chất lượng mô hình giảm hoặc hệ số khó d
 
 Thêm penalty để hạn chế trọng số quá lớn:
 
-- **Ridge (L2)**:
+- **Ridge (L2)**
 
 $$
 J_{ridge} = J + \lambda\lVert w \rVert^2
 $$
 
-- **Lasso (L1)**:
+- **Lasso (L1)**
 
 $$
 J_{lasso} = J + \lambda\lVert w \rVert_1
@@ -271,7 +279,7 @@ Tác dụng:
 ## 13) Vì sao gọi là "linear"?
 
 Điểm rất hay bị hiểu sai:
-- "Linear Regression" nghĩa là **tuyến tính theo tham số `w`**
+- "Linear Regression" nghĩa là **tuyến tính theo tham số $w$**
 - không bắt buộc dữ liệu đầu vào phải tuyến tính nguyên bản
 
 Ví dụ:
@@ -280,7 +288,7 @@ $$
 \hat{y} = w_1x + w_2x^2 + w_3\sin(x)
 $$
 
-Vẫn là linear regression nếu coi `[x, x^2, \sin(x)]` là các feature.
+Vẫn là linear regression nếu coi $[x, x^2, \sin(x)]$ là các feature.
 
 ---
 
@@ -297,8 +305,8 @@ Vẫn là linear regression nếu coi `[x, x^2, \sin(x)]` là các feature.
 
 ## 15) Checklist tự học nhanh
 
-- [ ] Hiểu rõ công thức dự đoán `\hat{y}`
-- [ ] Tự suy ra hoặc hiểu gradient `X^T(Xw - y)`
+- [ ] Hiểu rõ công thức dự đoán $\hat{y}$
+- [ ] Tự suy ra hoặc hiểu gradient $X^T(Xw - y)$
 - [ ] Implement được train loop gradient descent
 - [ ] So sánh Normal Equation vs Gradient Descent
 - [ ] Đánh giá bằng MAE/MSE/RMSE/R²
@@ -309,6 +317,61 @@ Vẫn là linear regression nếu coi `[x, x^2, \sin(x)]` là các feature.
 ## 16) Tóm tắt ngắn gọn
 
 - Linear Regression là mô hình baseline cực quan trọng cho bài toán hồi quy.
-- Trọng tâm không phải công thức dự đoán, mà là học `w` bằng tối ưu loss.
+- Trọng tâm không phải công thức dự đoán, mà là học $w$ bằng tối ưu loss.
 - Hai cách tối ưu chính: Normal Equation và Gradient Descent.
-- Muốn dùng tốt trong thực tế: cần data preprocessing + đánh giá đúng + kiểm soát overfitting.
+- Muốn dùng tốt trong thực tế: cần preprocessing + đánh giá đúng + kiểm soát overfitting.
+
+---
+
+## 17) Phụ lục - Phép nhân ma trận
+
+### 17.1 Điều kiện để nhân ma trận
+
+Giả sử:
+- Ma trận $A$ có kích thước $m \times n$
+- Ma trận $B$ có kích thước $n \times p$
+
+Khi đó mới nhân được và kết quả là ma trận $C$ có kích thước $m \times p$:
+
+$$
+C = A \cdot B
+$$
+
+### 17.2 Công thức phần tử
+
+Phần tử hàng $i$, cột $j$ của ma trận kết quả $C$:
+
+$$
+c_{ij} = a_{i1}b_{1j} + a_{i2}b_{2j} + \cdots + a_{in}b_{nj}
+$$
+
+Nghĩa là:
+- Lấy **hàng i** của $A$
+- Nhân với **cột j** của $B$
+
+### 17.3 Ví dụ cụ thể
+
+Cho:
+
+$$
+A = \begin{bmatrix}1 & 2 \\ 3 & 4\end{bmatrix},
+\qquad
+B = \begin{bmatrix}5 & 6 \\ 7 & 8\end{bmatrix}
+$$
+
+Khi đó:
+
+$$
+C = A \cdot B = \begin{bmatrix}19 & 22 \\ 43 & 50\end{bmatrix}
+$$
+
+Vì:
+
+$$
+\begin{aligned}
+c_{11} &= 1\cdot5 + 2\cdot7 = 19 \\
+c_{12} &= 1\cdot6 + 2\cdot8 = 22 \\
+c_{21} &= 3\cdot5 + 4\cdot7 = 43 \\
+c_{22} &= 3\cdot6 + 4\cdot8 = 50
+\end{aligned}
+$$
