@@ -22,9 +22,9 @@ Hai feature này không cùng scale.
 
 Nếu đưa thẳng vào Linear Regression:
 
-$$
-\hat{y} = w_1x_1 + w_2x_2 + b
-$$
+```text
+y_hat = w1 * x1 + w2 * x2 + b
+```
 
 thì feature `House size` có giá trị lớn hơn nhiều, nên gradient liên quan đến `w_1` cũng thường lớn hơn rất nhiều so với `w_2`.
 
@@ -41,19 +41,15 @@ Kết quả:
 
 Trong code Linear Regression của bạn, gradient cho mỗi weight có dạng:
 
-$$
-\frac{\partial J}{\partial w_j}
-=
-\frac{1}{N}
-\sum_{i=1}^{N}
-(\hat{y}_i - y_i)x_{ij}
-$$
+```text
+dJ/dw_j = (1 / N) * sum((y_hat_i - y_i) * x_ij)
+```
 
 Điểm quan trọng nằm ở phần:
 
-$$
-(\hat{y}_i - y_i)x_{ij}
-$$
+```text
+(y_hat_i - y_i) * x_ij
+```
 
 Nếu `x_j` rất lớn, gradient của `w_j` cũng dễ rất lớn.
 
@@ -74,9 +70,9 @@ for w2: error * rooms      = 100 * 3   = 300
 
 Gradient của `w1` lớn hơn rất nhiều. Khi update:
 
-$$
-w_j \leftarrow w_j - lr \cdot \frac{\partial J}{\partial w_j}
-$$
+```text
+w_j = w_j - lr * dJ/dw_j
+```
 
 nếu learning rate đủ lớn cho feature nhỏ, nó có thể quá lớn cho feature lớn.
 
@@ -137,9 +133,9 @@ Feature Scaling không làm model "thông minh hơn". Nó chủ yếu giúp quá
 
 Linear Regression vẫn học quan hệ tuyến tính:
 
-$$
-\hat{y} = w^Tx + b
-$$
+```text
+y_hat = dot(w, x) + b
+```
 
 Nhưng thay vì học trên dữ liệu gốc:
 
@@ -165,16 +161,16 @@ Min-Max Scaling đưa feature về một khoảng cố định, thường là `[
 
 Công thức:
 
-$$
-x' = \frac{x - x_{min}}{x_{max} - x_{min}}
-$$
+```text
+x_scaled = (x - x_min) / (x_max - x_min)
+```
 
 Trong đó:
 
-- $x$: giá trị gốc
-- $x_{min}$: giá trị nhỏ nhất của feature trong training set
-- $x_{max}$: giá trị lớn nhất của feature trong training set
-- $x'$: giá trị sau khi scale
+- `x`: giá trị gốc
+- `x_min`: giá trị nhỏ nhất của feature trong training set
+- `x_max`: giá trị lớn nhất của feature trong training set
+- `x_scaled`: giá trị sau khi scale
 
 Ví dụ:
 
@@ -187,13 +183,11 @@ max = 200
 
 Scale giá trị `120`:
 
-$$
-x' = \frac{120 - 50}{200 - 50}
-=
-\frac{70}{150}
-=
-0.4667
-$$
+```text
+x_scaled = (120 - 50) / (200 - 50)
+         = 70 / 150
+         = 0.4667
+```
 
 Ưu điểm:
 
@@ -230,32 +224,32 @@ Standardization đưa feature về phân phối có:
 
 Công thức:
 
-$$
-x' = \frac{x - \mu}{\sigma}
-$$
+```text
+x_scaled = (x - mean) / std
+```
 
 Trong đó:
 
-- $\mu$: mean của feature trong training set
-- $\sigma$: standard deviation của feature trong training set
+- `mean`: mean của feature trong training set
+- `std`: standard deviation của feature trong training set
 
 Mean:
 
-$$
-\mu = \frac{1}{N}\sum_{i=1}^{N}x_i
-$$
+```text
+mean = sum(x_i) / N
+```
 
 Variance:
 
-$$
-\sigma^2 = \frac{1}{N}\sum_{i=1}^{N}(x_i - \mu)^2
-$$
+```text
+variance = sum((x_i - mean)^2) / N
+```
 
 Standard deviation:
 
-$$
-\sigma = \sqrt{\sigma^2}
-$$
+```text
+std = sqrt(variance)
+```
 
 Ví dụ:
 
@@ -267,11 +261,10 @@ std  ≈ 56.07
 
 Scale giá trị `120`:
 
-$$
-x' = \frac{120 - 112.5}{56.07}
-\approx
-0.1338
-$$
+```text
+x_scaled = (120 - 112.5) / 56.07
+         ≈ 0.1338
+```
 
 Ưu điểm:
 
@@ -297,15 +290,15 @@ Mean Normalization đưa dữ liệu về quanh 0, thường chia cho range.
 
 Công thức:
 
-$$
-x' = \frac{x - \mu}{x_{max} - x_{min}}
-$$
+```text
+x_scaled = (x - mean) / (x_max - x_min)
+```
 
 Trong đó:
 
-- $\mu$: mean của feature
-- $x_{max}$: max của feature
-- $x_{min}$: min của feature
+- `mean`: mean của feature
+- `x_max`: max của feature
+- `x_min`: min của feature
 
 Ví dụ:
 
@@ -317,11 +310,10 @@ range = 200 - 50 = 150
 
 Scale giá trị `120`:
 
-$$
-x' = \frac{120 - 112.5}{150}
-=
-0.05
-$$
+```text
+x_scaled = (120 - 112.5) / 150
+         = 0.05
+```
 
 Khi nên dùng:
 
@@ -338,9 +330,9 @@ Max-Abs Scaling chia mỗi giá trị cho trị tuyệt đối lớn nhất.
 
 Công thức:
 
-$$
-x' = \frac{x}{\max(|x|)}
-$$
+```text
+x_scaled = x / max(abs(x))
+```
 
 Ví dụ:
 
@@ -512,20 +504,14 @@ rooms_scaled      = (rooms - mean_rooms) / std_rooms
 
 Model học:
 
-$$
-\hat{y}
-=
-w_1 x'_{size}
-+
-w_2 x'_{rooms}
-+
-b
-$$
+```text
+y_hat = w1 * size_scaled + w2 * rooms_scaled + b
+```
 
 Ở đây:
 
-- $w_1$ ứng với `house_size_scaled`, không phải `house_size` gốc.
-- $w_2$ ứng với `rooms_scaled`, không phải `rooms` gốc.
+- `w1` ứng với `house_size_scaled`, không phải `house_size` gốc.
+- `w2` ứng với `rooms_scaled`, không phải `rooms` gốc.
 
 Vì vậy khi đọc ý nghĩa weight, phải nhớ model đang học trên feature đã scale.
 
@@ -535,9 +521,9 @@ Vì vậy khi đọc ý nghĩa weight, phải nhớ model đang học trên feat
 
 Về mặt lý thuyết, Normal Equation:
 
-$$
-w = (X^TX)^{-1}X^Ty
-$$
+```text
+w = inverse(transpose(X) * X) * transpose(X) * y
+```
 
 không bắt buộc phải scale feature giống Gradient Descent.
 
@@ -570,9 +556,9 @@ R, G, B in [0, 255]
 
 Khi đưa vào model, thường convert về `f32`:
 
-$$
-x' = \frac{x}{255.0}
-$$
+```text
+x_scaled = x / 255.0
+```
 
 Ví dụ:
 
@@ -599,9 +585,9 @@ max = 255
 
 Nhiều model deep learning dùng:
 
-$$
-x' = \frac{x - mean}{std}
-$$
+```text
+x_scaled = (x - mean) / std
+```
 
 Ví dụ với RGB:
 
@@ -691,9 +677,9 @@ fn standardize(x: &[Vec<f64>], means: &[f64], stds: &[f64]) -> Vec<Vec<f64>>
 
 Công thức:
 
-$$
-x'_{ij} = \frac{x_{ij} - \mu_j}{\sigma_j}
-$$
+```text
+x_scaled_ij = (x_ij - mean_j) / std_j
+```
 
 Ý tưởng:
 
@@ -707,9 +693,9 @@ for each row:
 
 Với Standardization:
 
-$$
-x = x'\sigma + \mu
-$$
+```text
+x = x_scaled * std + mean
+```
 
 Code flow:
 

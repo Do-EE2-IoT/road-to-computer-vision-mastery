@@ -4,21 +4,21 @@
 
 Trong Gradient Descent, sau khi tính gradient, ta cập nhật tham số theo công thức:
 
-$$
-w_j \leftarrow w_j - lr \cdot \frac{\partial J}{\partial w_j}
-$$
+```text
+w_j = w_j - lr * dJ/dw_j
+```
 
-$$
-b \leftarrow b - lr \cdot \frac{\partial J}{\partial b}
-$$
+```text
+b = b - lr * dJ/db
+```
 
 Trong đó:
 
-- $w_j$: weight thứ `j`
-- $b$: bias
-- $lr$: learning rate
-- $\frac{\partial J}{\partial w_j}$: gradient của loss theo weight
-- $\frac{\partial J}{\partial b}$: gradient của loss theo bias
+- `w_j`: weight thứ `j`
+- `b`: bias
+- `lr`: learning rate
+- `dJ/dw_j`: gradient của loss theo weight
+- `dJ/db`: gradient của loss theo bias
 
 Learning rate quyết định mỗi bước update sẽ đi xa bao nhiêu.
 
@@ -223,16 +223,16 @@ Learning rate giảm dần theo epoch.
 
 Công thức:
 
-$$
-lr_t = \frac{lr_0}{1 + decay \cdot t}
-$$
+```text
+lr_t = lr_0 / (1 + decay * t)
+```
 
 Trong đó:
 
-- $lr_0$: learning rate ban đầu
-- $decay$: hệ số giảm
-- $t$: epoch hiện tại
-- $lr_t$: learning rate tại epoch `t`
+- `lr_0`: learning rate ban đầu
+- `decay`: hệ số giảm
+- `t`: epoch hiện tại
+- `lr_t`: learning rate tại epoch `t`
 
 Ví dụ:
 
@@ -243,15 +243,11 @@ decay = 0.01
 
 Tại epoch `100`:
 
-$$
-lr_{100}
-=
-\frac{0.1}{1 + 0.01 \cdot 100}
-=
-\frac{0.1}{2}
-=
-0.05
-$$
+```text
+lr_100 = 0.1 / (1 + 0.01 * 100)
+       = 0.1 / 2
+       = 0.05
+```
 
 Ưu điểm:
 
@@ -281,16 +277,16 @@ Step Decay giảm learning rate theo từng mốc epoch.
 
 Công thức:
 
-$$
-lr_t = lr_0 \cdot drop^{\left\lfloor \frac{t}{step\_size} \right\rfloor}
-$$
+```text
+lr_t = lr_0 * drop ^ floor(t / step_size)
+```
 
 Trong đó:
 
-- $lr_0$: learning rate ban đầu
-- $drop$: hệ số nhân sau mỗi step
-- $step\_size$: sau bao nhiêu epoch thì giảm một lần
-- $t$: epoch hiện tại
+- `lr_0`: learning rate ban đầu
+- `drop`: hệ số nhân sau mỗi step
+- `step_size`: sau bao nhiêu epoch thì giảm một lần
+- `t`: epoch hiện tại
 
 Ví dụ:
 
@@ -337,23 +333,27 @@ Exponential Decay giảm learning rate theo hàm mũ.
 
 Công thức:
 
-$$
-lr_t = lr_0 \cdot e^{-decay \cdot t}
-$$
+```text
+lr_t = lr_0 * e^(-decay * t)
+```
 
 Hoặc dạng đơn giản hơn:
 
-$$
-lr_t = lr_0 \cdot decay^t
-$$
+```text
+lr_t = lr_0 * decay^t
+```
 
 Trong đó:
 
-- $lr_0$: learning rate ban đầu
-- $decay$: hệ số giảm
-- $t$: epoch hiện tại
+- `lr_0`: learning rate ban đầu
+- `decay`: hệ số giảm
+- `t`: epoch hiện tại
 
-Ví dụ dạng $lr_t = lr_0 \cdot decay^t$:
+Ví dụ dạng:
+
+```text
+lr_t = lr_0 * decay^t
+```
 
 ```text
 lr0 = 0.1
@@ -393,24 +393,16 @@ Cosine Annealing giảm learning rate theo đường cosine.
 
 Công thức:
 
-$$
-lr_t
-=
-lr_{min}
-+
-\frac{1}{2}
-(lr_{max} - lr_{min})
-\left(
-1 + \cos\left(\frac{\pi t}{T}\right)
-\right)
-$$
+```text
+lr_t = lr_min + 0.5 * (lr_max - lr_min) * (1 + cos(pi * t / T))
+```
 
 Trong đó:
 
-- $lr_{max}$: learning rate lớn nhất
-- $lr_{min}$: learning rate nhỏ nhất
-- $t$: epoch hiện tại
-- $T$: tổng số epoch hoặc chu kỳ
+- `lr_max`: learning rate lớn nhất
+- `lr_min`: learning rate nhỏ nhất
+- `t`: epoch hiện tại
+- `T`: tổng số epoch hoặc chu kỳ
 
 Đặc điểm:
 
