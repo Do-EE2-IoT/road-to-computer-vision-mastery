@@ -8,6 +8,54 @@ You do not need to go too deep into mathematical proofs or Rust internals. You n
 
 ---
 
+## Learning Flow Overview
+
+This roadmap moves from numeric image understanding to deployable computer vision systems.
+
+```mermaid
+flowchart LR
+    A["Math Foundation<br/>algebra, linear algebra,<br/>calculus intuition, statistics"]
+    B["Rust CV Basics<br/>pixels, buffers,<br/>coordinates, image IO"]
+    C["Image Processing<br/>color spaces, filters,<br/>masks, morphology"]
+    D["Feature Engineering<br/>contours, boxes,<br/>histograms, measurements"]
+    E["Supervised ML<br/>classification, metrics,<br/>feature scaling, optimization"]
+    F["Deep Learning<br/>MLP, CNN,<br/>transfer learning"]
+    G["Object Detection<br/>YOLO, SSD,<br/>IoU, NMS, mAP"]
+    H["Deployment<br/>ONNX, video inference,<br/>latency, FPS"]
+    I["Portfolio<br/>inspection, classification,<br/>real-time detection"]
+
+    A --> B --> C --> D --> E --> F --> G --> H --> I
+```
+
+### What You Will Be Able To Build
+
+By following the chapters, you should be able to build:
+
+- Image preprocessing tools: resize, crop, normalize, grayscale, histogram, filters.
+- Color-based detection systems: HSV thresholding, mask cleanup, bounding boxes.
+- Rule-based inspection systems: object size, shape, color, and defect checks.
+- Feature-based classifiers: handcrafted features plus supervised learning.
+- Image classification systems: CNN or transfer learning based classifiers.
+- Object detection demos: YOLO/SSD style inference with bounding boxes.
+- Rust inference applications: image folder inference, video inference, webcam inference.
+- Practical reports: metrics, failure cases, latency, FPS, and reproducible commands.
+
+### Career Opportunities After This Roadmap
+
+This path prepares you for practical roles such as:
+
+- Computer Vision Engineer
+- AI Engineer focused on vision systems
+- Machine Learning Engineer for image data
+- Perception Engineer for camera-based systems
+- Visual Inspection / Industrial AI Engineer
+- Edge AI / Real-time Inference Engineer
+- Applied Deep Learning Engineer
+
+The strongest portfolio signal is not knowing every algorithm name. It is showing working systems with clear input/output, measured metrics, visual debugging, and honest failure analysis.
+
+---
+
 ## Core Direction
 
 ```text
