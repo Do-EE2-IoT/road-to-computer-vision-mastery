@@ -1,34 +1,20 @@
 # Roadmap to Become a **Computer Vision Engineer**
 
-This repository is a practical learning path for becoming a Computer Vision Engineer with Rust as the main implementation language.
+This roadmap is organized by chapters, not by days.
 
-The roadmap is not organized by days anymore. It is organized by chapters. Each chapter has a clear focus, minimum theory, concrete Rust exercises, and expected outputs. The goal is not to become a math researcher or a framework collector. The goal is to build useful computer vision systems, understand why they work, and debug them when they fail.
+The goal is to become practical enough to build, debug, and explain computer vision systems. The focus is Rust-based implementation, image processing, supervised machine learning, CNN image classification, and object detection.
+
+You do not need to go too deep into mathematical proofs or Rust internals. You need enough foundation to reason about images, transformations, models, metrics, and inference pipelines.
 
 ---
 
-## Learning Philosophy
-
-### What to Focus On
-
-- Build practical pipelines that work on real images.
-- Understand enough math to implement and debug models.
-- Prefer supervised learning, image classification, and object detection.
-- Use Rust to write clear preprocessing, inference, and experiment code.
-- Keep every topic connected to an observable output: image, mask, metric, model, or demo.
-
-### What to Avoid Going Too Deep Into
-
-- Advanced mathematical proofs.
-- Low-level Rust internals that do not help build CV systems.
-- Unsupervised learning as a main track.
-- Reinforcement learning as a main track.
-- Too many architectures without understanding training, metrics, and failure cases.
-
-### Main Direction
+## Core Direction
 
 ```text
-Math foundation
--> Image processing
+Math for images
+-> Rust implementation foundation
+-> Image representation and color spaces
+-> Filtering, morphology, and masks
 -> Feature extraction
 -> Supervised machine learning
 -> Neural networks
@@ -37,145 +23,431 @@ Math foundation
 -> Rust inference and portfolio projects
 ```
 
+What to prioritize:
+
+- Image processing
+- Supervised learning
+- CNN-based classification
+- Object detection
+- Practical Rust inference
+- Debugging by visual outputs and metrics
+
+What to de-prioritize:
+
+- Deep mathematical proofs
+- Reinforcement learning
+- Unsupervised learning as a main track
+- Too many architectures without experiments
+- Low-level Rust topics that do not help CV work
+
 ---
 
-## Chapter 1 - Essential Math for Computer Vision
+## Chapter 1 - Mathematics for Images
 
 ### Objective
 
-Build the minimum mathematical foundation needed to understand image operations, model training, and neural networks.
+Build the minimum math foundation needed to understand images as numeric data.
 
-You do not need to master proofs. You need to understand the shapes, operations, and effects well enough to implement them and debug mistakes.
+The goal is to become comfortable treating an image as numbers, coordinates, vectors, matrices, channels, and transformations. This chapter stays focused on image math only.
 
-### Minimum Knowledge
+### Minimum Math You Must Know
 
-#### Linear Algebra
+#### 1. Numbers, Ranges, and Clamping
 
-Focus on:
+You must understand:
 
-- Vector
-- Matrix
-- Dot product
-- Matrix multiplication
-- Transpose
-- Identity matrix
-- Inverse matrix
-- Norm / distance
-- Basic geometric meaning of linear transformation
+- Integer vs floating-point values
+- Pixel range: `0..255`
+- Normalized range: `0.0..1.0`
+- Overflow and underflow
+- Clamping
+- Rounding
+- Type conversion: `u8 -> f32`, `f32 -> u8`
 
 Why it matters:
 
-- Images are matrices.
-- RGB images are 3D tensors: `height x width x channels`.
-- Linear Regression uses dot product.
-- Normal Equation uses transpose, matrix multiplication, and inverse.
-- Neural networks are chains of matrix operations.
+- Image pixels are usually stored as `u8`.
+- Many calculations need `f32` or `f64`.
+- If you increase brightness without clamping, values can overflow.
 
 Practical Rust exercises:
 
-- Implement `dot(a, b)`.
-- Implement `transpose(matrix)`.
-- Implement `matmul(a, b)`.
-- Implement `add_bias_column(x)`.
-- Implement simple Normal Equation for Linear Regression.
-- Create tests for all matrix utilities.
+- Load an image and print pixel values.
+- Convert `u8` pixels into `f32`.
+- Normalize pixels from `[0, 255]` to `[0.0, 1.0]`.
+- Convert normalized pixels back to `u8`.
+- Implement brightness adjustment:
+
+```text
+new_pixel = clamp(pixel + value, 0, 255)
+```
+
+- Implement contrast adjustment:
+
+```text
+new_pixel = clamp((pixel - 128) * factor + 128, 0, 255)
+```
 
 Expected output:
 
-- A small matrix utility module.
-- A Linear Regression implementation using both Gradient Descent and Normal Equation.
+- Original image.
+- Brighter image.
+- Darker image.
+- Higher contrast image.
+- Lower contrast image.
 
-Current related work:
+#### 2. Coordinate System
 
-- `days/day_3/examples/linear_regression_gradient_decent.rs`
-- `days/day_3/examples/linear_regression_normal_equation.rs`
-- `days/day_3/docs/Normal_Equation.md`
+You must understand:
 
-#### Calculus and Optimization
+- Image width and height
+- Pixel coordinate `(x, y)`
+- Top-left origin
+- Row-major layout
+- Index formula
+- Neighbor pixels
+- Boundary handling
 
-Focus on:
-
-- Function
-- Slope
-- Derivative intuition
-- Gradient
-- Loss function
-- Gradient Descent update rule
-- Learning rate
-- Dynamic learning rate
-
-Minimum formula intuition:
+Important coordinate rule:
 
 ```text
-prediction = dot(w, x) + b
-error = prediction - target
-loss = mean(error^2)
-w = w - learning_rate * gradient_w
-b = b - learning_rate * gradient_b
+x = column
+y = row
+index = y * width + x
 ```
 
 Why it matters:
 
-- Model training is optimization.
-- Gradient tells the direction to update parameters.
-- Learning rate controls update size.
-- Feature scaling makes optimization easier.
+- Almost every image algorithm loops over pixels.
+- Filters need neighbor pixels.
+- Bounding boxes and masks depend on correct coordinates.
 
 Practical Rust exercises:
 
-- Implement MSE loss.
-- Implement gradients for Linear Regression.
-- Train with fixed learning rate.
-- Train with dynamic learning rate.
-- Compare training with and without feature scaling.
+- Print the `(x, y)` coordinate of selected pixels.
+- Convert `(x, y)` into a 1D buffer index.
+- Draw a red point at a given coordinate.
+- Draw a horizontal line.
+- Draw a vertical line.
+- Draw a rectangle border.
+- Crop an image using `(x_min, y_min, x_max, y_max)`.
 
 Expected output:
 
-- A working Gradient Descent training loop.
-- Logs showing `epoch`, `loss`, and optionally `learning_rate`.
-- A comparison report showing why scaling improves convergence.
+- Image with points and lines.
+- Image with a manually drawn rectangle.
+- Cropped image.
 
-Current related work:
+#### 3. Vectors
 
-- `days/day_3/docs/Linear_regression.md`
-- `days/day_4/docs/Feature_Scaling.md`
-- `days/day_4/docs/Learning_rate_dynamic.md`
-- `days/day_4/examples/feature_scale.rs`
+You must understand:
 
-#### Probability and Statistics
+- Vector as a list of numbers
+- Vector length
+- Dot product
+- Magnitude / norm
+- Distance between two vectors
+- Vector as a feature representation
 
-Focus on:
+Minimum formulas:
+
+```text
+dot(a, b) = sum(a[i] * b[i])
+norm(a) = sqrt(sum(a[i]^2))
+distance(a, b) = sqrt(sum((a[i] - b[i])^2))
+```
+
+Why it matters:
+
+- RGB pixel can be treated as a vector: `[R, G, B]`.
+- Color similarity can be measured with distance.
+- Feature extraction later produces vectors.
+
+Practical Rust exercises:
+
+- Implement `dot(a, b)`.
+- Implement `norm(a)`.
+- Implement `euclidean_distance(a, b)`.
+- Compute distance between two RGB colors.
+- Find pixels close to a target color using RGB distance.
+
+Example:
+
+```text
+target = [255, 0, 0]
+pixel = [240, 20, 10]
+distance = color_distance(target, pixel)
+```
+
+Expected output:
+
+- A color similarity mask.
+- A highlighted image showing pixels close to the target color.
+
+#### 4. Matrices
+
+You must understand:
+
+- Matrix rows and columns
+- Matrix shape
+- Transpose
+- Matrix multiplication
+- Identity matrix
+- Matrix as grayscale image
+- Matrix as transformation
+
+Why it matters:
+
+- A grayscale image is a matrix.
+- Many image filters operate on a small matrix called a kernel.
+- Matrix operations make image flipping, cropping, and geometric transformations easier to reason about.
+
+Practical Rust exercises:
+
+- Represent a grayscale image as `Vec<Vec<f32>>`.
+- Implement `transpose(matrix)`.
+- Implement `matmul(a, b)`.
+- Convert RGB image to grayscale matrix.
+- Convert grayscale matrix back to image.
+- Flip image horizontally using matrix indexing.
+- Flip image vertically using matrix indexing.
+
+Expected output:
+
+- Grayscale image.
+- Horizontally flipped image.
+- Vertically flipped image.
+- Matrix utility tests.
+
+#### 5. Channels and Tensors
+
+You must understand:
+
+- Grayscale image: `height x width`
+- RGB image: `height x width x 3`
+- Channel order
+- Interleaved layout
+- Planar layout
+- HWC layout
+- CHW layout
+
+Important layouts:
+
+```text
+Interleaved RGB:
+[R G B][R G B][R G B]...
+
+Planar RGB:
+[R R R ...][G G G ...][B B B ...]
+
+HWC:
+height, width, channel
+
+CHW:
+channel, height, width
+```
+
+Why it matters:
+
+- Image files often use interleaved RGB.
+- Some image pipelines use planar channel layouts.
+- Wrong layout gives wrong colors or corrupted reconstructed images.
+
+Practical Rust exercises:
+
+- Split RGB image into `R`, `G`, and `B` channel images.
+- Merge `R`, `G`, and `B` back into RGB.
+- Convert interleaved RGB to planar RGB.
+- Convert HWC layout to CHW layout.
+- Verify conversion by reconstructing the image.
+
+Expected output:
+
+- Red channel image.
+- Green channel image.
+- Blue channel image.
+- Reconstructed RGB image.
+
+#### 6. Weighted Sum
+
+You must understand:
+
+- Weighted average
+- Weighted sum over channels
+- Weighted sum over neighbor pixels
+
+Why it matters:
+
+- Grayscale conversion is a weighted sum.
+- Blur and edge detection are weighted sums over neighborhoods.
+- Many image operations are just repeated weighted sums.
+
+Practical Rust exercises:
+
+- Implement grayscale conversion:
+
+```text
+gray = 0.299 * R + 0.587 * G + 0.114 * B
+```
+
+- Implement simple average grayscale:
+
+```text
+gray = (R + G + B) / 3
+```
+
+- Compare both outputs.
+
+Expected output:
+
+- Weighted grayscale image.
+- Average grayscale image.
+- Short note explaining the visual difference.
+
+#### 7. Convolution and Kernels
+
+You must understand:
+
+- Kernel
+- Kernel size
+- Center pixel
+- Neighbor pixels
+- Padding
+- Stride
+- Convolution as weighted sum
+
+Core idea:
+
+```text
+output_pixel = sum(neighbor_pixel * kernel_weight)
+```
+
+Why it matters:
+
+- Blur uses kernels.
+- Sharpening uses kernels.
+- Edge detection uses kernels.
+- Many classical image operations are built from small kernels.
+
+Practical Rust exercises:
+
+- Implement a generic 3x3 convolution on grayscale images.
+- Apply box blur kernel.
+- Apply sharpen kernel.
+- Apply Sobel X kernel.
+- Apply Sobel Y kernel.
+- Combine Sobel X and Sobel Y into edge magnitude.
+
+Example kernels:
+
+```text
+Box blur:
+1/9 * [
+  [1, 1, 1],
+  [1, 1, 1],
+  [1, 1, 1],
+]
+
+Sharpen:
+[
+  [ 0, -1,  0],
+  [-1,  5, -1],
+  [ 0, -1,  0],
+]
+
+Sobel X:
+[
+  [-1, 0, 1],
+  [-2, 0, 2],
+  [-1, 0, 1],
+]
+```
+
+Expected output:
+
+- Blurred image.
+- Sharpened image.
+- Horizontal edge map.
+- Vertical edge map.
+- Combined edge map.
+
+#### 8. Basic Statistics
+
+You must understand:
 
 - Mean
 - Variance
 - Standard deviation
-- Distribution intuition
-- Train / validation / test split
-- Overfitting and underfitting
-- Confusion matrix
-- Precision
-- Recall
-- F1-score
+- Min / max
+- Histogram
+- Normalization
 
 Why it matters:
 
-- Feature scaling uses mean and standard deviation.
-- Metrics decide whether a model is actually useful.
-- Computer vision datasets are often imbalanced.
-- Accuracy alone is often misleading.
+- Image brightness can be measured by mean pixel value.
+- Contrast can be measured by standard deviation.
+- Histograms describe intensity distribution.
+- Normalization is used before model input.
 
 Practical Rust exercises:
 
-- Implement mean and standard deviation.
-- Implement train/test split.
-- Implement confusion matrix.
-- Implement accuracy, precision, recall, and F1.
-- Evaluate a binary classifier manually.
+- Compute mean intensity of a grayscale image.
+- Compute min and max pixel value.
+- Compute standard deviation of pixel values.
+- Build a 256-bin grayscale histogram.
+- Normalize image values to `[0.0, 1.0]`.
+- Apply min-max normalization.
 
 Expected output:
 
-- A reusable evaluation module.
-- A small metrics report for classification tasks.
+- Printed image statistics.
+- Histogram data.
+- Normalized image.
+
+#### 9. Geometric Transformations
+
+You must understand:
+
+- Translation
+- Scaling
+- Rotation intuition
+- Nearest-neighbor sampling
+- Bilinear interpolation concept
+
+Why it matters:
+
+- Image augmentation uses geometric transformations.
+- Object position and scale affect detection.
+- Incorrect sampling creates artifacts.
+
+Practical Rust exercises:
+
+- Translate image by `(dx, dy)`.
+- Resize image using nearest-neighbor sampling.
+- Rotate image by 90 degrees.
+- Implement center crop.
+- Compare resize artifacts.
+
+Expected output:
+
+- Translated image.
+- Resized image.
+- Rotated image.
+- Center-cropped image.
+
+### Chapter 1 Completion Criteria
+
+You are ready to move on when you can:
+
+- Treat an image as numeric arrays.
+- Loop over pixels safely.
+- Convert between `u8` and `f32`.
+- Implement grayscale conversion manually.
+- Split and merge RGB channels.
+- Apply a 3x3 kernel.
+- Compute image statistics.
+- Draw simple geometry on an image.
+- Explain what changed in the output image and why.
 
 ---
 
@@ -183,49 +455,37 @@ Expected output:
 
 ### Objective
 
-Use Rust productively for computer vision experiments without over-focusing on advanced Rust internals.
+Use Rust productively for image and model experiments without spending too much time on unrelated language depth.
 
-### Minimum Knowledge
+### Minimum Rust Knowledge
 
 Focus on:
 
 - `Vec<T>`
-- `Vec<Vec<f64>>`
+- `Vec<Vec<T>>`
 - Slices: `&[T]`
-- Structs and `impl`
-- Error handling with `Result`
-- File paths with `PathBuf`
-- Cargo workspace and examples
-- Basic unit tests
+- Structs
+- `impl`
+- `Result`
+- `Option`
+- `PathBuf`
+- Cargo workspace
+- Cargo examples
+- Unit tests
 
-Why it matters:
+Practical exercises:
 
-- You need clean, repeatable experiments.
-- CV code often handles matrices, image buffers, paths, and batch files.
-- Tests catch silent math bugs early.
-
-Practical Rust exercises:
-
-- Create one example per topic under `days/day_x/examples`.
-- Add `#[cfg(test)]` self-tests for math-heavy code.
-- Build small command-line demos that print intermediate values.
-- Keep preprocessing functions separate from model code.
+- Create a reusable image-loading helper.
+- Create a small matrix utility module.
+- Write self-tests for math functions.
+- Build one runnable example per concept.
+- Print intermediate values while learning.
 
 Expected output:
 
-- A consistent Rust workspace.
-- Examples that can be run using `cargo run -p day_x --example example_name`.
-- Tests that can be run using `cargo test -p day_x --example example_name`.
-
-Recommended crates later:
-
-- `image`
-- `imageproc`
-- `opencv`
-- `ndarray`
-- `nalgebra`
-- `tch`
-- `ort` or ONNX Runtime bindings
+- Clear Rust examples.
+- Small reusable helper functions.
+- Unit tests for math and preprocessing logic.
 
 ---
 
@@ -233,9 +493,7 @@ Recommended crates later:
 
 ### Objective
 
-Understand how images are stored and how to choose the right color space for a vision task.
-
-This is the first real Computer Vision chapter. Start here after the minimum math foundation.
+Understand how images are stored and choose the right color space for each task.
 
 ### Core Topics
 
@@ -245,7 +503,9 @@ Focus on:
 - BGR
 - HSV
 - YUV
-- YUV420 / NV12 / NV21
+- YUV420
+- NV12
+- NV21
 - LAB as a bonus
 - Grayscale vs color image
 - Channel meaning
@@ -255,44 +515,35 @@ Focus on:
 Why it matters:
 
 - Color filtering depends heavily on color space.
-- Camera pipelines often use YUV, not RGB.
-- Deep learning models usually expect normalized RGB tensors.
-- Wrong channel order silently breaks models.
+- Camera pipelines often use YUV.
+- Many libraries use BGR while image files may use RGB.
+- Wrong channel order silently breaks results.
 
 Practical Rust exercises:
 
-- Load an image and inspect width, height, and channels.
+- Load an image and inspect width, height, and channel count.
 - Convert raw RGB bytes into an image.
-- Split RGB channels into separate grayscale images.
+- Split RGB channels.
 - Convert RGB to HSV manually.
-- Threshold a color in HSV.
+- Visualize H, S, and V channels.
 - Convert RGB to YUV.
-- Build a simple NV21 or NV12 buffer from RGB.
-- Save intermediate outputs for visual debugging.
+- Build a simple NV12 or NV21 buffer.
+- Save all intermediate outputs.
 
 Expected output:
 
 - RGB channel visualization.
 - HSV channel visualization.
 - YUV channel visualization.
-- A color thresholding demo.
-
-Current related work:
-
-- `days/day_1/docs/rgb.md`
-- `days/day_1/docs/hsv.md`
-- `days/day_1/docs/yuv.md`
-- `days/day_1/examples/rgb.rs`
-- `days/day_1/examples/hsv.rs`
-- `days/day_1/examples/yuv.rs`
+- Color-space comparison notes.
 
 What to pay attention to:
 
 - RGB vs BGR channel order.
-- Hue wrap-around for red objects.
+- Hue wrap-around for red.
 - Full range vs limited range in YUV.
 - UV vs VU order in NV12/NV21.
-- Lighting changes can break simple thresholds.
+- Lighting changes can break color thresholds.
 
 ---
 
@@ -300,9 +551,7 @@ What to pay attention to:
 
 ### Objective
 
-Build practical color-based detection pipelines using thresholding, masks, and cleanup operations.
-
-This chapter is directly useful for simple industrial inspection, object isolation, traffic lights, balls, signs, color markers, and preprocessing before feature extraction.
+Build practical color-based detection pipelines using thresholds, masks, and cleanup operations.
 
 ### Core Topics
 
@@ -323,9 +572,9 @@ Focus on:
 
 Why it matters:
 
-- Many real CV pipelines start with segmentation.
-- A mask converts messy pixels into object candidates.
-- Morphology turns noisy masks into usable object regions.
+- Many practical CV systems start with segmentation.
+- A mask converts pixels into object candidates.
+- Morphology turns noisy masks into usable regions.
 - Bounding boxes turn masks into measurable detections.
 
 Practical Rust exercises:
@@ -348,16 +597,6 @@ Expected output:
 - Bounding box output.
 - Pixel count logs before and after cleanup.
 
-Current related work:
-
-- `days/day_2/docs/color_filtering_core.md`
-- `days/day_2/docs/threshold_and_masking.md`
-- `days/day_2/docs/mask_cleanup.md`
-- `days/day_2/docs/feature_extraction.md`
-- `days/day_2/examples/color_filtering.rs`
-- `days/day_2/examples/mask_clean_up.rs`
-- `days/day_2/examples/feature_extraction.rs`
-
 What to pay attention to:
 
 - Always inspect the raw mask before cleanup.
@@ -372,9 +611,7 @@ What to pay attention to:
 
 ### Objective
 
-Learn the practical filters and transformations needed before ML or deep learning.
-
-You do not need to implement every algorithm from scratch. You need to understand what each operation does, when to use it, and how it affects downstream detection.
+Learn practical filters and transformations used before ML or deep learning.
 
 ### Core Topics
 
@@ -394,7 +631,7 @@ Focus on:
 
 Why it matters:
 
-- Preprocessing can make a simple method work.
+- Preprocessing can make a simple system work.
 - Bad preprocessing can destroy useful details.
 - Edge and contour logic are still useful in inspection systems.
 
@@ -404,18 +641,18 @@ Practical Rust exercises:
 - Run edge detection before and after blur.
 - Extract contours from a cleaned mask.
 - Measure area, bounding box, aspect ratio, and center point.
-- Build a small inspection rule such as "reject object if area is too small".
+- Build a small rule-based inspection demo.
 
 Expected output:
 
 - Filter comparison grid.
 - Edge map images.
 - Contour and bounding box visualization.
-- A rule-based inspection demo.
+- Rule-based inspection output.
 
 What to pay attention to:
 
-- Gaussian blur reduces noise but also softens edges.
+- Gaussian blur reduces noise but softens edges.
 - Median blur is useful for salt-and-pepper noise.
 - Bilateral filter preserves edges better but costs more.
 - Canny thresholds must be tuned per image condition.
@@ -426,7 +663,7 @@ What to pay attention to:
 
 ### Objective
 
-Convert images or masks into measurable features that can be used by rules or machine learning models.
+Convert images or masks into measurable features that can be used by rules or supervised learning models.
 
 ### Core Topics
 
@@ -444,29 +681,30 @@ Focus on:
 
 Why it matters:
 
-- Before deep learning, many CV systems used handcrafted features.
-- Even with deep learning, feature thinking helps with debugging.
-- Features can create strong baselines for simple classification tasks.
+- Features create strong baselines for simple tasks.
+- Feature thinking helps debug deep learning failures later.
+- Measurements are often enough for inspection systems.
 
 Practical Rust exercises:
 
 - Extract bounding box from a binary mask.
 - Compute object center.
 - Compute aspect ratio.
-- Build a small feature vector from mask and color statistics.
-- Train a simple classifier using handcrafted features.
+- Compute object area.
+- Build a feature vector from shape and color statistics.
+- Normalize feature vectors.
 
 Expected output:
 
 - Feature extraction report.
 - Object measurement demo.
-- Simple feature vector printed for each image.
+- Printed feature vectors.
 
 What to pay attention to:
 
-- A feature must be stable across lighting, scale, and position.
+- Features must be stable across lighting, scale, and position.
 - Avoid features that only work on one sample image.
-- Normalize features before training ML models.
+- Normalize features before training models.
 
 ---
 
@@ -474,9 +712,9 @@ What to pay attention to:
 
 ### Objective
 
-Learn the supervised ML concepts that are actually needed before deep learning.
+Learn the supervised ML concepts needed before neural networks and CNNs.
 
-The focus is not unsupervised learning or reinforcement learning. The focus is supervised learning for classification and prediction.
+The focus is supervised learning. Unsupervised learning and reinforcement learning are not the main track.
 
 ### Core Topics
 
@@ -496,8 +734,8 @@ Focus on:
 
 Why it matters:
 
-- Logistic Regression and Softmax explain the foundation of classifiers.
-- Neural networks are built from the same training loop ideas.
+- Logistic Regression and Softmax are the foundation of classifiers.
+- Neural networks reuse the same training loop concepts.
 - Evaluation discipline matters more than trying many models.
 
 Practical Rust exercises:
@@ -507,24 +745,16 @@ Practical Rust exercises:
 - Implement Binary Cross Entropy.
 - Implement Softmax.
 - Implement Cross Entropy.
-- Implement a small classifier using handcrafted image features.
-- Compare performance with and without feature scaling.
+- Train a classifier using handcrafted image features.
+- Compare training with and without feature scaling.
 - Print confusion matrix, precision, recall, and F1.
 
 Expected output:
 
 - Linear Regression demo.
 - Logistic Regression demo.
-- Softmax multiclass classifier demo.
+- Softmax classifier demo.
 - Evaluation report.
-
-Current related work:
-
-- `days/day_3/docs/Linear_regression.md`
-- `days/day_3/docs/Normal_Equation.md`
-- `days/day_4/docs/Feature_Scaling.md`
-- `days/day_4/docs/Learning_rate_dynamic.md`
-- `days/day_4/examples/feature_scale.rs`
 
 What to pay attention to:
 
@@ -536,13 +766,11 @@ What to pay attention to:
 
 ---
 
-## Chapter 8 - Neural Networks from the Practical View
+## Chapter 8 - Neural Networks
 
 ### Objective
 
 Understand neural networks as trainable function approximators before moving into CNNs.
-
-You only need enough theory to build, train, and debug models.
 
 ### Core Topics
 
@@ -570,9 +798,9 @@ Why it matters:
 Practical Rust exercises:
 
 - Build a small MLP using a Rust ML crate.
-- Train on simple feature vectors.
+- Train on handcrafted image features.
 - Compare MLP vs Logistic Regression.
-- Plot or log train loss and validation loss.
+- Log train loss and validation loss.
 - Add early stopping logic.
 
 Expected output:
@@ -585,8 +813,8 @@ Expected output:
 What to pay attention to:
 
 - Start with a simple model first.
-- If a simple model fails, a bigger model may only hide the real problem.
-- Watch the validation gap, not only training loss.
+- If a simple model fails, a bigger model may only hide the real issue.
+- Watch validation metrics, not only training loss.
 
 ---
 
@@ -650,7 +878,7 @@ What to pay attention to:
 
 - Normalize images exactly as the model expects.
 - Keep train and validation transforms separate.
-- Strong augmentation can help, but wrong augmentation can hurt.
+- Wrong augmentation can hurt performance.
 - MobileNet is often better when deployment speed matters.
 
 ---
@@ -838,34 +1066,21 @@ Use this loop for every chapter:
 6. Reuse the module in a more realistic task.
 ```
 
-This keeps learning close to real engineering work.
-
----
-
-## Repository Structure
-
-Current practical modules:
-
-```text
-days/day_1  -> Color spaces: RGB, HSV, YUV
-days/day_2  -> Color filtering, mask cleanup, feature extraction
-days/day_3  -> Linear Regression, Gradient Descent, Normal Equation
-days/day_4  -> Feature Scaling, Dynamic Learning Rate
-```
-
-Future modules should follow the same pattern:
-
-```text
-days/day_x/docs      -> theory and notes
-days/day_x/examples  -> runnable Rust examples
-days/day_x/src       -> reusable code if needed
-```
-
-Even though the folder names still use `day_x`, the learning path is now chapter-based. Treat each folder as a module, not a strict calendar day.
-
 ---
 
 ## Skill Checklist
+
+### Math and Image Basics
+
+- [ ] Convert pixels between `u8` and `f32`.
+- [ ] Normalize and clamp pixel values.
+- [ ] Work with image coordinates safely.
+- [ ] Treat grayscale images as matrices.
+- [ ] Treat RGB pixels as vectors.
+- [ ] Split and merge image channels.
+- [ ] Apply 3x3 convolution kernels.
+- [ ] Compute image statistics and histograms.
+- [ ] Perform basic geometric transformations.
 
 ### Image Processing
 
@@ -915,11 +1130,12 @@ Even though the folder names still use `day_x`, the learning path is now chapter
 If time or energy is limited, focus in this order:
 
 ```text
-1. Image preprocessing robustness
-2. Supervised ML fundamentals
-3. CNN image classification
-4. Object detection inference
-5. Deployment and portfolio polish
+1. Math applied directly to images
+2. Image preprocessing robustness
+3. Supervised ML fundamentals
+4. CNN image classification
+5. Object detection inference
+6. Deployment and portfolio polish
 ```
 
 The main target is not to know every algorithm deeply. The main target is to build reliable computer vision pipelines, understand the failure modes, and explain engineering decisions clearly.
