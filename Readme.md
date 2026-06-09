@@ -42,112 +42,161 @@ What to de-prioritize:
 
 ---
 
-## Chapter 1 - Mathematics for Images
+## Chapter 1 - Math Foundation for Computer Vision
 
 ### Objective
 
-Build the minimum math foundation needed to understand images as numeric data.
+Build the minimum math foundation first, then apply that math to images.
 
-The goal is to become comfortable treating an image as numbers, coordinates, vectors, matrices, channels, and transformations. This chapter stays focused on image math only.
+This chapter should be learned before image processing, color spaces, machine learning, or deep learning. The goal is not to master proofs. The goal is to understand the exact math tools that will later appear in image processing and model training.
 
-### Minimum Math You Must Know
+### Learning Order
 
-#### 1. Numbers, Ranges, and Clamping
+```text
+Basic algebra
+-> Linear algebra
+-> Calculus intuition
+-> Basic statistics
+-> Apply the math to images with Rust
+```
+
+---
+
+### 1. Basic Algebra
 
 You must understand:
 
-- Integer vs floating-point values
-- Pixel range: `0..255`
-- Normalized range: `0.0..1.0`
-- Overflow and underflow
+- Variables
+- Functions
+- Linear equation
+- Slope
+- Ratio
+- Percentage
+- Range mapping
 - Clamping
-- Rounding
-- Type conversion: `u8 -> f32`, `f32 -> u8`
+- Absolute value
+- Power and square root
+
+Minimum formulas:
+
+```text
+y = ax + b
+normalized = (x - min) / (max - min)
+scaled = normalized * (new_max - new_min) + new_min
+clamped = min(max(value, low), high)
+distance_1d = abs(a - b)
+```
 
 Why it matters:
 
-- Image pixels are usually stored as `u8`.
-- Many calculations need `f32` or `f64`.
-- If you increase brightness without clamping, values can overflow.
+- Pixel values are numbers in a fixed range.
+- Brightness and contrast are simple algebraic transformations.
+- Normalization is used constantly in image pipelines.
+- Range mapping appears in grayscale, visualization, preprocessing, and later model input.
 
-Practical Rust exercises:
+Practice with Rust first:
 
-- Load an image and print pixel values.
-- Convert `u8` pixels into `f32`.
-- Normalize pixels from `[0, 255]` to `[0.0, 1.0]`.
-- Convert normalized pixels back to `u8`.
-- Implement brightness adjustment:
+- Implement `clamp(value, low, high)`.
+- Implement `normalize(value, min, max)`.
+- Implement `map_range(value, old_min, old_max, new_min, new_max)`.
+- Implement `abs_diff(a, b)`.
+- Write unit tests for edge cases.
+
+Apply to images:
+
+- Convert pixel range `[0, 255]` to `[0.0, 1.0]`.
+- Convert normalized values back to `[0, 255]`.
+- Implement brightness adjustment.
+- Implement contrast adjustment.
+- Implement negative image:
 
 ```text
-new_pixel = clamp(pixel + value, 0, 255)
-```
-
-- Implement contrast adjustment:
-
-```text
-new_pixel = clamp((pixel - 128) * factor + 128, 0, 255)
+new_pixel = 255 - pixel
 ```
 
 Expected output:
 
-- Original image.
 - Brighter image.
 - Darker image.
 - Higher contrast image.
 - Lower contrast image.
+- Negative image.
 
-#### 2. Coordinate System
+---
+
+### 2. Coordinate Geometry
 
 You must understand:
 
-- Image width and height
-- Pixel coordinate `(x, y)`
-- Top-left origin
-- Row-major layout
-- Index formula
-- Neighbor pixels
-- Boundary handling
+- 2D coordinate system
+- Point `(x, y)`
+- Width and height
+- Top-left image origin
+- Row and column
+- Rectangle coordinates
+- Distance between two points
+- Translation
+- Scaling
 
-Important coordinate rule:
+Minimum formulas:
 
 ```text
-x = column
-y = row
 index = y * width + x
+dx = x2 - x1
+dy = y2 - y1
+distance = sqrt(dx^2 + dy^2)
+x_new = x + tx
+y_new = y + ty
 ```
 
 Why it matters:
 
-- Almost every image algorithm loops over pixels.
-- Filters need neighbor pixels.
-- Bounding boxes and masks depend on correct coordinates.
+- Every pixel has a coordinate.
+- Cropping, drawing, bounding boxes, and masks depend on coordinates.
+- Many bugs in CV code come from mixing up `x/y` and `row/column`.
 
-Practical Rust exercises:
+Practice with Rust first:
 
-- Print the `(x, y)` coordinate of selected pixels.
-- Convert `(x, y)` into a 1D buffer index.
-- Draw a red point at a given coordinate.
-- Draw a horizontal line.
-- Draw a vertical line.
+- Define a `Point { x, y }`.
+- Define a `Rect { x, y, width, height }`.
+- Implement `point_distance(a, b)`.
+- Implement `contains(rect, point)`.
+- Implement `(x, y) -> index`.
+- Implement `index -> (x, y)`.
+
+Apply to images:
+
+- Draw one point on an image.
+- Draw horizontal and vertical lines.
 - Draw a rectangle border.
-- Crop an image using `(x_min, y_min, x_max, y_max)`.
+- Crop an image using rectangle coordinates.
+- Translate an image by `(tx, ty)`.
 
 Expected output:
 
-- Image with points and lines.
-- Image with a manually drawn rectangle.
+- Image with points.
+- Image with lines.
+- Image with rectangle.
 - Cropped image.
+- Translated image.
 
-#### 3. Vectors
+---
+
+### 3. Linear Algebra
 
 You must understand:
 
-- Vector as a list of numbers
-- Vector length
+- Scalar
+- Vector
+- Matrix
+- Matrix shape
 - Dot product
-- Magnitude / norm
-- Distance between two vectors
-- Vector as a feature representation
+- Vector norm
+- Euclidean distance
+- Transpose
+- Matrix multiplication
+- Identity matrix
+- Matrix as transformation
 
 Minimum formulas:
 
@@ -155,81 +204,241 @@ Minimum formulas:
 dot(a, b) = sum(a[i] * b[i])
 norm(a) = sqrt(sum(a[i]^2))
 distance(a, b) = sqrt(sum((a[i] - b[i])^2))
+transpose(A)[j][i] = A[i][j]
+C[i][j] = sum(A[i][k] * B[k][j])
 ```
 
 Why it matters:
 
-- RGB pixel can be treated as a vector: `[R, G, B]`.
-- Color similarity can be measured with distance.
-- Feature extraction later produces vectors.
+- RGB color can be treated as a vector `[R, G, B]`.
+- Grayscale images can be treated as matrices.
+- Color similarity can be measured by vector distance.
+- Channel conversion is often a matrix operation.
+- Geometric transformation can be expressed with matrices.
 
-Practical Rust exercises:
+Practice with Rust first:
 
 - Implement `dot(a, b)`.
 - Implement `norm(a)`.
 - Implement `euclidean_distance(a, b)`.
-- Compute distance between two RGB colors.
-- Find pixels close to a target color using RGB distance.
-
-Example:
-
-```text
-target = [255, 0, 0]
-pixel = [240, 20, 10]
-distance = color_distance(target, pixel)
-```
-
-Expected output:
-
-- A color similarity mask.
-- A highlighted image showing pixels close to the target color.
-
-#### 4. Matrices
-
-You must understand:
-
-- Matrix rows and columns
-- Matrix shape
-- Transpose
-- Matrix multiplication
-- Identity matrix
-- Matrix as grayscale image
-- Matrix as transformation
-
-Why it matters:
-
-- A grayscale image is a matrix.
-- Many image filters operate on a small matrix called a kernel.
-- Matrix operations make image flipping, cropping, and geometric transformations easier to reason about.
-
-Practical Rust exercises:
-
-- Represent a grayscale image as `Vec<Vec<f32>>`.
 - Implement `transpose(matrix)`.
 - Implement `matmul(a, b)`.
+- Implement `identity_matrix(n)`.
+- Add tests for each function.
+
+Apply to images:
+
+- Treat each RGB pixel as a 3D vector.
+- Find pixels close to a target color using vector distance.
 - Convert RGB image to grayscale matrix.
 - Convert grayscale matrix back to image.
 - Flip image horizontally using matrix indexing.
 - Flip image vertically using matrix indexing.
+- Split RGB channels into separate matrices.
+- Merge channel matrices back into RGB.
 
 Expected output:
 
+- Color similarity mask.
 - Grayscale image.
 - Horizontally flipped image.
 - Vertically flipped image.
-- Matrix utility tests.
+- Red, green, and blue channel images.
+- Reconstructed RGB image.
 
-#### 5. Channels and Tensors
+---
+
+### 4. Calculus Intuition
 
 You must understand:
 
-- Grayscale image: `height x width`
-- RGB image: `height x width x 3`
-- Channel order
-- Interleaved layout
-- Planar layout
+- Function input and output
+- Change in value
+- Slope
+- Derivative intuition
+- Increasing vs decreasing function
+- Local change
+- Approximation with small differences
+
+Minimum intuition:
+
+```text
+slope = change_in_y / change_in_x
+small_change = f(x + 1) - f(x)
+```
+
+Why it matters:
+
+- Edge detection is based on intensity change.
+- A strong edge means pixel values change quickly.
+- Gradients in images are local changes in horizontal or vertical direction.
+- You do not need formal calculus proofs here, but you need the idea of "how fast something changes".
+
+Practice with Rust first:
+
+- Implement slope between two points.
+- Given a list of values, compute neighbor differences.
+- Find where a 1D signal changes the most.
+- Smooth a 1D signal with a moving average.
+
+Apply to images:
+
+- Compute horizontal intensity difference:
+
+```text
+dx = pixel(x + 1, y) - pixel(x, y)
+```
+
+- Compute vertical intensity difference:
+
+```text
+dy = pixel(x, y + 1) - pixel(x, y)
+```
+
+- Create a simple edge map from `abs(dx) + abs(dy)`.
+- Compare simple difference edge map with Sobel edge map later.
+
+Expected output:
+
+- Horizontal difference image.
+- Vertical difference image.
+- Simple edge map.
+
+---
+
+### 5. Basic Statistics
+
+You must understand:
+
+- Count
+- Sum
+- Mean
+- Min / max
+- Variance
+- Standard deviation
+- Histogram
+- Distribution intuition
+- Outlier
+
+Minimum formulas:
+
+```text
+mean = sum(values) / n
+variance = sum((x - mean)^2) / n
+std = sqrt(variance)
+```
+
+Why it matters:
+
+- Mean intensity describes brightness.
+- Standard deviation roughly describes contrast.
+- Histogram shows how pixel values are distributed.
+- Outliers and noise affect thresholds.
+- Normalization depends on statistics.
+
+Practice with Rust first:
+
+- Implement `mean(values)`.
+- Implement `variance(values)`.
+- Implement `std(values)`.
+- Implement `min_max(values)`.
+- Implement a histogram for values in `0..255`.
+
+Apply to images:
+
+- Compute mean brightness of a grayscale image.
+- Compute min and max intensity.
+- Compute standard deviation of intensity.
+- Build a 256-bin grayscale histogram.
+- Apply min-max normalization.
+- Compare image statistics before and after contrast adjustment.
+
+Expected output:
+
+- Printed image statistics.
+- Histogram data.
+- Normalized image.
+- Before/after statistics report.
+
+---
+
+### 6. Weighted Sum and Kernels
+
+You must understand:
+
+- Weighted average
+- Weighted sum
+- Local neighborhood
+- Kernel
+- Kernel size
+- Padding
+- Stride
+- Convolution as repeated weighted sum
+
+Minimum idea:
+
+```text
+output_pixel = sum(neighbor_pixel * kernel_weight)
+```
+
+Why it matters:
+
+- Grayscale conversion is a weighted sum of RGB channels.
+- Blur is a weighted sum over neighboring pixels.
+- Sharpening and edge detection are also kernel operations.
+- This is the bridge from math to real image processing.
+
+Practice with Rust first:
+
+- Implement weighted sum over a vector.
+- Implement 1D moving average.
+- Implement 3x3 weighted sum over a matrix.
+
+Apply to images:
+
+- Implement weighted grayscale:
+
+```text
+gray = 0.299 * R + 0.587 * G + 0.114 * B
+```
+
+- Implement average grayscale:
+
+```text
+gray = (R + G + B) / 3
+```
+
+- Implement generic 3x3 convolution.
+- Apply box blur.
+- Apply sharpen kernel.
+- Apply Sobel X.
+- Apply Sobel Y.
+- Combine Sobel X and Sobel Y into edge magnitude.
+
+Expected output:
+
+- Weighted grayscale image.
+- Average grayscale image.
+- Blurred image.
+- Sharpened image.
+- Horizontal edge map.
+- Vertical edge map.
+- Combined edge map.
+
+---
+
+### 7. Layout and Tensor Thinking
+
+You must understand:
+
+- 1D buffer
+- 2D matrix
+- 3D image array
+- Interleaved RGB
+- Planar RGB
 - HWC layout
 - CHW layout
+- Shape validation
 
 Important layouts:
 
@@ -249,205 +458,41 @@ channel, height, width
 
 Why it matters:
 
-- Image files often use interleaved RGB.
-- Some image pipelines use planar channel layouts.
-- Wrong layout gives wrong colors or corrupted reconstructed images.
+- Image files often store pixels in interleaved layout.
+- Some processing pipelines prefer planar layout.
+- Wrong layout creates wrong colors and broken outputs.
 
-Practical Rust exercises:
+Apply to images:
 
-- Split RGB image into `R`, `G`, and `B` channel images.
-- Merge `R`, `G`, and `B` back into RGB.
 - Convert interleaved RGB to planar RGB.
-- Convert HWC layout to CHW layout.
+- Convert planar RGB back to interleaved RGB.
+- Convert HWC to CHW.
+- Convert CHW to HWC.
 - Verify conversion by reconstructing the image.
 
 Expected output:
 
-- Red channel image.
-- Green channel image.
-- Blue channel image.
-- Reconstructed RGB image.
+- Reconstructed image after layout conversion.
+- Unit tests proving layout roundtrip correctness.
 
-#### 6. Weighted Sum
-
-You must understand:
-
-- Weighted average
-- Weighted sum over channels
-- Weighted sum over neighbor pixels
-
-Why it matters:
-
-- Grayscale conversion is a weighted sum.
-- Blur and edge detection are weighted sums over neighborhoods.
-- Many image operations are just repeated weighted sums.
-
-Practical Rust exercises:
-
-- Implement grayscale conversion:
-
-```text
-gray = 0.299 * R + 0.587 * G + 0.114 * B
-```
-
-- Implement simple average grayscale:
-
-```text
-gray = (R + G + B) / 3
-```
-
-- Compare both outputs.
-
-Expected output:
-
-- Weighted grayscale image.
-- Average grayscale image.
-- Short note explaining the visual difference.
-
-#### 7. Convolution and Kernels
-
-You must understand:
-
-- Kernel
-- Kernel size
-- Center pixel
-- Neighbor pixels
-- Padding
-- Stride
-- Convolution as weighted sum
-
-Core idea:
-
-```text
-output_pixel = sum(neighbor_pixel * kernel_weight)
-```
-
-Why it matters:
-
-- Blur uses kernels.
-- Sharpening uses kernels.
-- Edge detection uses kernels.
-- Many classical image operations are built from small kernels.
-
-Practical Rust exercises:
-
-- Implement a generic 3x3 convolution on grayscale images.
-- Apply box blur kernel.
-- Apply sharpen kernel.
-- Apply Sobel X kernel.
-- Apply Sobel Y kernel.
-- Combine Sobel X and Sobel Y into edge magnitude.
-
-Example kernels:
-
-```text
-Box blur:
-1/9 * [
-  [1, 1, 1],
-  [1, 1, 1],
-  [1, 1, 1],
-]
-
-Sharpen:
-[
-  [ 0, -1,  0],
-  [-1,  5, -1],
-  [ 0, -1,  0],
-]
-
-Sobel X:
-[
-  [-1, 0, 1],
-  [-2, 0, 2],
-  [-1, 0, 1],
-]
-```
-
-Expected output:
-
-- Blurred image.
-- Sharpened image.
-- Horizontal edge map.
-- Vertical edge map.
-- Combined edge map.
-
-#### 8. Basic Statistics
-
-You must understand:
-
-- Mean
-- Variance
-- Standard deviation
-- Min / max
-- Histogram
-- Normalization
-
-Why it matters:
-
-- Image brightness can be measured by mean pixel value.
-- Contrast can be measured by standard deviation.
-- Histograms describe intensity distribution.
-- Normalization is used before model input.
-
-Practical Rust exercises:
-
-- Compute mean intensity of a grayscale image.
-- Compute min and max pixel value.
-- Compute standard deviation of pixel values.
-- Build a 256-bin grayscale histogram.
-- Normalize image values to `[0.0, 1.0]`.
-- Apply min-max normalization.
-
-Expected output:
-
-- Printed image statistics.
-- Histogram data.
-- Normalized image.
-
-#### 9. Geometric Transformations
-
-You must understand:
-
-- Translation
-- Scaling
-- Rotation intuition
-- Nearest-neighbor sampling
-- Bilinear interpolation concept
-
-Why it matters:
-
-- Image augmentation uses geometric transformations.
-- Object position and scale affect detection.
-- Incorrect sampling creates artifacts.
-
-Practical Rust exercises:
-
-- Translate image by `(dx, dy)`.
-- Resize image using nearest-neighbor sampling.
-- Rotate image by 90 degrees.
-- Implement center crop.
-- Compare resize artifacts.
-
-Expected output:
-
-- Translated image.
-- Resized image.
-- Rotated image.
-- Center-cropped image.
+---
 
 ### Chapter 1 Completion Criteria
 
 You are ready to move on when you can:
 
-- Treat an image as numeric arrays.
-- Loop over pixels safely.
-- Convert between `u8` and `f32`.
+- Explain the minimum algebra used in pixel transformations.
+- Work with image coordinates correctly.
+- Treat RGB pixels as vectors.
+- Treat grayscale images as matrices.
+- Implement dot product, norm, distance, transpose, and matrix multiplication.
+- Understand slope as local change.
+- Compute simple image gradients.
+- Compute mean, variance, standard deviation, min/max, and histogram.
 - Implement grayscale conversion manually.
-- Split and merge RGB channels.
 - Apply a 3x3 kernel.
-- Compute image statistics.
-- Draw simple geometry on an image.
-- Explain what changed in the output image and why.
+- Convert between interleaved and planar channel layouts.
+- Explain what changed in each output image and why.
 
 ---
 
