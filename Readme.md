@@ -13,7 +13,7 @@ You do not need to go too deep into mathematical proofs or Rust internals. You n
 This roadmap moves from numeric image understanding to deployable computer vision systems.
 
 ```mermaid
-flowchart LR
+flowchart TD
     A["Math Foundation<br/>algebra, linear algebra,<br/>calculus intuition, statistics"]
     B["Rust CV Basics<br/>pixels, buffers,<br/>coordinates, image IO"]
     C["Image Processing<br/>color spaces, filters,<br/>masks, morphology"]
